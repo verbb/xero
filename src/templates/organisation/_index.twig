@@ -1,0 +1,209 @@
+{% do view.registerAssetBundle("thejoshsmith\\xero\\web\\assets\\XeroCPAsset") %}
+
+{% extends "_layouts/cp" %}
+{% import "_includes/forms" as forms %}
+
+{% set selectedSubnavItem = 'organisation' %}
+
+{% set docTitle = 'Xero Organisation' %}
+{% set title = 'Xero Organisation' %}
+{% set fullPageForm = connection ? true : false %}
+
+{% block content %}
+    {{ actionInput('xero/organisation/save-settings') }}
+
+    {# Xero isn't setup? Direct the user to do that step first #}
+    {% if not pluginSettings.xeroClientId and not pluginSettings.xeroClientSecret %}
+
+        <h2>Setup Required</h2>
+        <p>You need to configure this plugin with a <a href="https://developer.xero.com/documentation/getting-started/getting-started-guide">Xero app</a> before you can link a Xero organisation.</p>
+        {% if devMode %}
+            <a href="{{cpUrl('xero/settings')}}" class="btn submit">Update Settings</a>
+        {% else %}
+            <em>Please ask your developer to action this.</em>
+        {% endif %}
+
+    {# No connections? Provide a button to setup the first connection #}
+    {% elseif not connections|length %}
+
+        <h2>Connect to Xero</h2>
+        <p>To get started, you'll need to connect your Xero organisation to Craft. Use the button below to start the authentication process.</p>
+        <a class="btn submit" href="{{siteUrl('admin/xero/auth')}}">Connect to Xero</a>
+
+    {% else %}
+        {% if connection and orgSettings %}
+
+            {# Get a list of all account codes and map 'em for the select boxes. #}
+            {% set accountOptions = [{label: 'Please select an account', value: null}] |
+                merge(accounts|map(account => {
+                    label: account.Name ~ ' - ' ~ account.Code ~ ' - ' ~ account.Type,
+                    value: account.Code
+                })
+            ) %}
+
+            <div id="fields">
+                <div id="tab-content" class="flex-fields">
+                    {% if not connection.enabled %}
+                        <p class="warning with-icon"> You need to enable this organisation before finanicials will sync to Xero.</p>
+                    {% endif %}
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Sales Revenue"|t('xero'),
+                        id: 'accountSales',
+                        name: 'accountSales',
+                        instructions: 'Sales revenue maps to this account',
+                        options: accountOptions,
+                        required: true,
+                        value: orgSettings.accountSales,
+                        errors: orgSettings.getErrors('accountSales'),
+                    }) }}
+
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Accounts Receivable"|t('xero'),
+                        id: 'accountReceivable',
+                        name: 'accountReceivable',
+                        instructions: 'Successfully paid orders are mapped to this account',
+                        options: accountOptions,
+                        required: true,
+                        value: orgSettings.accountReceivable,
+                        errors: orgSettings.getErrors('accountReceivable'),
+                    }) }}
+
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Shipping & Delivery"|t('xero'),
+                        id: 'accountShipping',
+                        name: 'accountShipping',
+                        instructions: 'Shipping costs map to this account',
+                        options: accountOptions,
+                        required: true,
+                        value: orgSettings.accountShipping,
+                        errors: orgSettings.getErrors('accountShipping'),
+                    }) }}
+
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Rounding"|t('xero'),
+                        id: 'accountRounding',
+                        name: 'accountRounding',
+                        instructions: 'Rounding adjustments map to this account',
+                        options: accountOptions,
+                        required: true,
+                        value: orgSettings.accountRounding,
+                        errors: orgSettings.getErrors('accountRounding'),
+                    }) }}
+
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Discounts"|t('xero'),
+                        id: 'accountDiscounts',
+                        name: 'accountDiscounts',
+                        instructions: 'Discount totals map to this account',
+                        options: accountOptions,
+                        value: orgSettings.accountDiscounts,
+                        errors: orgSettings.getErrors('accountDiscounts'),
+                    }) }}
+
+                    {{ forms.selectField({
+                        fieldClass: 'width-50',
+                        label: "Additional Fees"|t('xero'),
+                        id: 'accountAdditionalFees',
+                        name: 'accountAdditionalFees',
+                        instructions: 'Additional Fees and Adjustments map to this account',
+                        options: accountOptions,
+                        value: orgSettings.accountAdditionalFees,
+                        errors: orgSettings.getErrors('accountAdditionalFees'),
+                    }) }}
+                </div>
+            </div>
+
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block details %}
+    {% if connection %}
+        {% set tenant = connection.tenant %}
+        {% set resourceOwner = connection.resourceOwner %}
+
+        <div class="meta">
+            {{ forms.lightswitchField({
+                label: 'Enabled',
+                id: 'enabled',
+                name: 'enabled',
+                on: connection.enabled,
+            }) }}
+        </div>
+
+        <div class="meta">
+            {{ forms.lightswitchField({
+                label: 'Create Payments?',
+                instructions: 'If enabled, orders marked as paid will have a Payment sent to Xero.',
+                id: 'createPayments',
+                name: 'createPayments',
+                on: orgSettings.createPayments,
+                errors: orgSettings.getErrors('createPayments'),
+
+            }) }}
+            {{ forms.lightswitchField({
+                label: 'Update Xero inventory?',
+                instructions: 'Using product SKUs as the Xero Item Code, inventory levels in Xero will be updated.<br><br><span class="warning with-icon">This operation will fail if the item code doesnt exist in Xero</span>',
+                id: 'updateInventory',
+                name: 'updateInventory',
+                on: orgSettings.updateInventory,
+                errors: orgSettings.getErrors('updateInventory'),
+            }) }}
+        </div>
+
+        <div class="meta">
+            {{ forms.selectField({
+                label: "Organisation",
+                id: "connectionId",
+                name: "connectionId",
+                instructions: "This is the selected Xero organisation that Commerce will send financial data to.",
+                options: connections|map(connection => {
+                    label: connection.tenant.tenantName,
+                    value: connection.id
+                }),
+                value: connection.id
+            }) }}
+        </div>
+
+        <div id="meta-details" class="meta read-only">
+            {% block meta %}
+                <div class="data">
+                    <h5 class="heading">{{ 'Name'|t('app') }}</h5>
+                    <div class="value">{{ resourceOwner.givenName ~ ' ' ~ resourceOwner.familyName }}</div>
+                </div>
+                <div class="data">
+                    <h5 class="heading">{{ 'Email'|t('app') }}</h5>
+                    <div class="value">{{ resourceOwner.email }}</div>
+                </div>
+                <div class="data">
+                    <h5 class="heading">{{ 'Expires'|t('app') }}</h5>
+                    <div class="value">{{ connection.credential.expires|date('jS M Y H:ia') }}</div>
+                </div>
+                <div class="data">
+                    <h5 class="heading">{{ 'Status'|t('app') }}</h5>
+                    <div id="status-value" class="value">
+                        <span class="status {{ connection.status == 'connected' ? 'green' : 'red' }}"></span>{% if connection.status == 'connected' %}Connected{% else %}Disconnected{% endif %}
+                        {% if connection.status == 'disconnected' %}
+                            <a href="{{ cpUrl('xero/auth') }}" class="btn small icon right">Reconnect</a>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endblock %}
+        </div>
+        {% if connection.status == 'connected' %}
+            <a href="javascript:;" data-connectionId="{{ connection.id }}" data-icon="alert" class="btn icon dashed warning right js--xero-disconnect">Disconnect</a>
+        {% endif %}
+    {% endif %}
+{% endblock %}
+
+{% block actionButton %}
+    {% if connection %}
+        <a href="{{ cpUrl('xero/auth') }}" data-icon="plus" class="btn xero icon js--xero-connect">Connect to Xero</a>
+        {{ parent() }}
+    {% endif %}
+{% endblock %}

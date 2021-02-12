@@ -10,20 +10,27 @@
 
 namespace thejoshsmith\xero\controllers;
 
-use thejoshsmith\xero\Xero;
-use thejoshsmith\xero\services\XeroAPIService;
+use thejoshsmith\xero\Plugin;
+
+use craft\commerce\Plugin as Commerce;
 
 use Craft;
 use craft\web\Controller;
-use craft\commerce\Plugin as Commerce;
-use yii\web\ForbiddenHttpException;
-use yii\web\Response;
+
+use yii\web\BadRequestHttpException;
 
 class BaseController extends Controller
 {
-
-    // Public Methods
-    // =========================================================================
+    /**
+     * Initialises the base controller
+     *
+     * @return void
+     */
+    public function init()
+    {
+        $this->requirePermission('accessPlugin-xero');
+        parent::init();
+    }
 
     public function actionSendOrderToXero()
     {
@@ -31,8 +38,12 @@ class BaseController extends Controller
 
         $orderId = Craft::$app->request->getParam('orderId');
         if ($orderId) {
-            $order = Commerce::getInstance()->getOrders()->getOrderById($orderId);
-            Xero::$plugin->api->sendOrder($order);
+            try {
+                $order = Commerce::getInstance()->getOrders()->getOrderById($orderId);
+                Plugin::getInstance()->getXeroApi()->sendOrder($order);
+            } catch (\Throwable $e) {
+                throw new BadRequestHttpException($e->getMessage());
+            }
         }
         return false;
     }

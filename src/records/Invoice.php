@@ -4,8 +4,8 @@
  *
  * Xero - Craft Commerce 2 plugin
  *
+ * @copyright 2019 Myles Derham
  * @link      https://www.mylesderham.dev/
- * @copyright Copyright (c) 2019 Myles Derham
  */
 
 namespace thejoshsmith\xero\records;
@@ -13,9 +13,7 @@ namespace thejoshsmith\xero\records;
 use craft\db\ActiveRecord;
 use craft\commerce\elements\Order;
 
-use yii\db\ActiveQueryInterface;
-
-class InvoiceRecord extends ActiveRecord
+class Invoice extends ActiveRecord
 {
 
     // Public Methods
