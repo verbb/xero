@@ -145,13 +145,13 @@ class XeroConnections extends Component
      *
      * @return Connection
      */
-    public function getConnectionById(int $id): Connection
+    public function getConnectionById(int $id): ?Connection
     {
         return Connection::find()->where(['id' => $id])->one();
     }
 
     /**
-     * Clean up connection and credentials information
+     * Removes a connection and credentials information
      * We keep resource owner and tenant data as they can be linked to multiple
      *
      * @param AccessTokenInterface $token      Access Token
@@ -159,7 +159,7 @@ class XeroConnections extends Component
      *
      * @return void
      */
-    public function cleanUpConnection(AccessTokenInterface $token, Connection $connection): void
+    public function removeConnection(AccessTokenInterface $token, Connection $connection): void
     {
         Plugin::getInstance()
             ->getXeroOAuth()
@@ -245,7 +245,7 @@ class XeroConnections extends Component
         $accessToken = Credential::toAccessToken($credential);
 
         // Disconnect and clean up records
-        $this->cleanUpConnection($accessToken, $connection);
+        $this->removeConnection($accessToken, $connection);
     }
 
     /**
