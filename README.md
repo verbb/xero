@@ -2,6 +2,8 @@
 
 # Xero plugin for Craft Commerce 2 & 3
 
+> Looking for the legacy plugin with OAuth 1.0a support? <a href="https://github.com/thejoshsmith/craft-commerce-xero">You can find it here.</a>
+
 ## Overview
 This plugin allows you to automatically send Commerce invoices into Xero including contacts, payments and even inventory updates.
 
