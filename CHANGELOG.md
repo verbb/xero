@@ -1,5 +1,13 @@
 # Release Notes for Craft Commerce Xero
 
+## 1.0.0 - 2021-02-13
+### Changed
+- Plugin has been shifted to a new repository `thejoshsmith/commerce-xero`
+- Improved model validation
+### Fixed
+- Restored the "Send to Xero" functionality from completed orders.
+- Fixed a bug where switching organisations would overwrite the Xero connection ID with the plugin's connection ID
+
 ## 1.0.0-beta.2 - 2021-02-13
 ### Changed
 - Users can now select from a list of organisations
