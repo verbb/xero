@@ -42,7 +42,10 @@ class ConnectionsController extends BaseController
     {
         $this->_requirePatchRequest();
 
-        $connectionId = $this->request->getBodyParam('connectionId');
+        $data = $this->request->getBodyParams();
+
+        $connectionId = $data['connectionId'];
+        $selected = $data['selected'];
 
         if (empty($connectionId) || !is_numeric($connectionId)) {
             throw new BadRequestHttpException('Connection ID is required.');
@@ -50,9 +53,28 @@ class ConnectionsController extends BaseController
 
         $connection = Plugin::getInstance()
             ->getXeroConnections()
-            ->markAsSelected($connectionId);
+            ->getConnectionById($connectionId);
 
-        return $this->asJson(['success' => true, 'data' => $connection]);
+        if (empty($connection)) {
+            throw new NotFoundHttpException('Connection not found.');
+        }
+
+        // Update and save it
+        $connection->scenario = Connection::SCENARIO_PATCH;
+        $connection->attributes = $data;
+        $connection->save();
+
+        // Special case for selected connections
+        if (isset($selected) && $selected === 1) {
+            $connection = Plugin::getInstance()
+                ->getXeroConnections()
+                ->markAsSelected($connectionId);
+        }
+
+        return $this->asJson([
+            'success' => true,
+            'data' => $connection
+        ]);
     }
 
     /**

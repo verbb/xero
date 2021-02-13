@@ -17,11 +17,24 @@ class Connection extends ActiveRecord
     const STATUS_DISCONNECTED = 'disconnected';
 
     /**
+     * Define Scenarios
+     */
+    const SCENARIO_PATCH = 'patch';
+
+    /**
      * @inheritdoc
      */
     public static function tableName(): string
     {
         return '{{%xero_connections}}';
+    }
+
+    public function scenarios()
+    {
+        $scenarios = parent::scenarios();
+        $scenarios[self::SCENARIO_PATCH] = ['selected', 'enabled', 'status'];
+        $scenarios[self::SCENARIO_DEFAULT] = ['connectionId', 'credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId', 'selected', 'enabled', 'status'];
+        return $scenarios;
     }
 
     /**
@@ -30,7 +43,10 @@ class Connection extends ActiveRecord
     public function rules()
     {
         return [
-            [['id', 'connectionId', 'credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId', 'status'], 'safe'],
+            [['connectionId', 'credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId'], 'required', 'on' => self::SCENARIO_DEFAULT],
+            [['id'], 'required', 'on' => self::SCENARIO_PATCH],
+            [['credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId', 'selected', 'enabled'], 'integer'],
+            [['connectionId', 'status'], 'string'],
         ];
     }
 

@@ -55,6 +55,7 @@ function updateSelectedConnection(connectionId)
     method: 'PATCH',
     body: JSON.stringify({
         connectionId: connectionId,
+        selected: 1,
         [Craft.csrfTokenName]: Craft.csrfTokenValue
     }),
     headers: {

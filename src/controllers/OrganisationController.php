@@ -76,26 +76,6 @@ class OrganisationController extends BaseController
         );
     }
 
-    public function actionSaveSelectedOrganisation()
-    {
-        $this->requirePostRequest();
-
-        // Connection ID is a required parameter
-        if (empty($data['connectionId']) ) {
-            $this->setFailFlash(Plugin::t('Couldn\'t find the organisation\'s connection.'));
-            return null;
-        }
-
-        $xeroConnections = Plugin::getInstance()->getXeroConnections();
-        $connection = $xeroConnections->getConnectionById($data['connectionId']);
-
-        $connection->selected = 1;
-        $connection->save();
-
-        $this->setSuccessFlash(Plugin::t('Organisation selected was successfully saved.'));
-        return null;
-    }
-
     /**
      * Saves organisation settings
      *
@@ -129,12 +109,16 @@ class OrganisationController extends BaseController
         $xeroConnections = Plugin::getInstance()->getXeroConnections();
         $connection = $xeroConnections->getConnectionById($data['connectionId']);
 
+        if (empty($connection)) {
+            throw new NotFoundHttpException('Connection not found');
+        }
+
+        // Todo, move this to a service
         $connection->enabled = $data['enabled'] ?? false;
         $connection->settings = $orgSettings->attributes;
-        $connection->selected = 1;
         $connection->save();
 
         $this->setSuccessFlash(Plugin::t('Organisation Settings saved.'));
-        return null;
+        return $this->redirectToPostedUrl();
     }
 }
