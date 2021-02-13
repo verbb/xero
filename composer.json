@@ -1,5 +1,5 @@
 {
-  "name": "thejoshsmith/craft-commerce-xero",
+  "name": "thejoshsmith/commerce-xero",
   "description": "",
   "type": "craft-plugin",
   "version": "1.0.0-beta.2",
@@ -29,23 +29,23 @@
   },
   "autoload": {
     "psr-4": {
-      "thejoshsmith\\xero\\": "src/"
+      "thejoshsmith\\commerce\\xero\\": "src/"
     }
   },
   "support": {
-    "docs": "https://github.com/thejoshsmith/craft-commerce-xero/blob/master/README.md",
-    "issues": "https://github.com/thejoshsmith/craft-commerce-xero/issues"
+    "docs": "https://github.com/thejoshsmith/commerce-xero/blob/master/README.md",
+    "issues": "https://github.com/thejoshsmith/commerce-xero/issues"
   },
   "extra": {
     "name": "Xero",
-    "handle": "xero",
+    "handle": "commerce-xero",
     "hasCpSettings": false,
     "hasCpSection": true,
-    "changelogUrl": "https://raw.githubusercontent.com/thejoshsmith/craft-commerce-xero/master/CHANGELOG.md",
+    "changelogUrl": "https://raw.githubusercontent.com/thejoshsmith/commerce-xero/master/CHANGELOG.md",
     "components": {
-      "XeroConnectionService": "thejoshsmith\\xero\\services\\XeroConnectionService",
-      "XeroAPIService": "thejoshsmith\\xero\\services\\XeroAPIService"
+      "XeroConnectionService": "thejoshsmith\\commerce\\xero\\services\\XeroConnectionService",
+      "XeroAPIService": "thejoshsmith\\commerce\\xero\\services\\XeroAPIService"
     },
-    "class": "thejoshsmith\\xero\\Plugin"
+    "class": "thejoshsmith\\commerce\\xero\\Plugin"
   }
 }

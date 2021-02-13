@@ -8,14 +8,14 @@
  * @copyright Copyright (c) 2019 Myles Derham
  */
 
-namespace thejoshsmith\xero\models;
+namespace thejoshsmith\commerce\xero\models;
 
 use craft\base\Model;
 
 use Craft;
 use yii\base\Exception;
 use craft\commerce\records\Order;
-use thejoshsmith\xero\records\Invoice;
+use thejoshsmith\commerce\xero\records\Invoice;
 
 class Invoice extends Model
 {

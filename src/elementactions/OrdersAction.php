@@ -8,7 +8,9 @@
  * @copyright Copyright (c) 2019 Myles Derham
  */
 
-namespace thejoshsmith\xero\elementactions;
+namespace thejoshsmith\commerce\xero\elementactions;
+
+use thejoshsmith\commerce\xero\Plugin;
 
 use Craft;
 use craft\base\ElementAction;
@@ -21,7 +23,7 @@ class OrdersAction extends ElementAction
     public function init()
     {
         if ($this->label === null) {
-            $this->label = Craft::t('xero', 'Send to Xero');
+            $this->label = Plugin::t('Send to Xero');
         }
     }
 

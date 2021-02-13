@@ -1,9 +1,9 @@
 <?php
 
-namespace thejoshsmith\xero\services;
+namespace thejoshsmith\commerce\xero\services;
 
-use thejoshsmith\xero\traits\XeroOAuth as XeroOAuthTrait;
-use thejoshsmith\xero\traits\XeroOAuthStorage as XeroOAuthStorageTrait;
+use thejoshsmith\commerce\xero\traits\XeroOAuth as XeroOAuthTrait;
+use thejoshsmith\commerce\xero\traits\XeroOAuthStorage as XeroOAuthStorageTrait;
 
 use craft\base\Component;
 

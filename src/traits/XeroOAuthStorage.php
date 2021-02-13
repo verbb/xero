@@ -1,16 +1,16 @@
 <?php
 
-namespace thejoshsmith\xero\traits;
+namespace thejoshsmith\commerce\xero\traits;
 
 use Craft;
 
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use Calcinai\OAuth2\Client\XeroResourceOwner;
 use Calcinai\OAuth2\Client\XeroTenant;
-use thejoshsmith\xero\records\Connection;
-use thejoshsmith\xero\records\Credential;
-use thejoshsmith\xero\records\ResourceOwner;
-use thejoshsmith\xero\records\Tenant;
+use thejoshsmith\commerce\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Credential;
+use thejoshsmith\commerce\xero\records\ResourceOwner;
+use thejoshsmith\commerce\xero\records\Tenant;
 
 /**
  * Xero API Storage Trait
@@ -23,7 +23,7 @@ use thejoshsmith\xero\records\Tenant;
  * @package   CraftCommerceXero
  * @author    Josh Smith <by@joshthe.dev>
  * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @version   GIT: $Id$
  * @link      https://joshthe.dev
  * @since     1.0.0
@@ -35,7 +35,7 @@ use thejoshsmith\xero\records\Tenant;
   * @category Traits
   * @package  CraftCommerceXero
   * @author   Josh Smith <by@joshthe.dev>
-  * @license  Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+  * @license  Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
   * @link     https://joshthe.dev
   * @since    1.0.0
   */

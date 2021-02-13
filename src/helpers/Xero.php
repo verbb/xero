@@ -1,6 +1,6 @@
 <?php
 
-namespace thejoshsmith\xero\helpers;
+namespace thejoshsmith\commerce\xero\helpers;
 
 use Firebase\JWT\JWT;
 use XeroPHP\Remote\Collection;

@@ -11,7 +11,7 @@
  * @link      https://www.mylesderham.dev/
  */
 
-namespace thejoshsmith\xero;
+namespace thejoshsmith\commerce\xero;
 
 use Craft;
 use craft\web\View;
@@ -20,19 +20,19 @@ use craft\web\UrlManager;
 use craft\events\TemplateEvent;
 use craft\commerce\elements\Order;
 
-use thejoshsmith\xero\traits\Routes;
+use thejoshsmith\commerce\xero\traits\Routes;
 use craft\base\Plugin as CraftPlugin;
-use thejoshsmith\xero\traits\Services;
+use thejoshsmith\commerce\xero\traits\Services;
 use craft\events\RegisterUrlRulesEvent;
-use thejoshsmith\xero\events\OAuthEvent;
-use thejoshsmith\xero\jobs\SendToXeroJob;
+use thejoshsmith\commerce\xero\events\OAuthEvent;
+use thejoshsmith\commerce\xero\jobs\SendToXeroJob;
 use craft\web\twig\variables\CraftVariable;
 
-use thejoshsmith\xero\controllers\AuthController;
-use thejoshsmith\xero\web\assets\SendToXeroAsset;
-use thejoshsmith\xero\web\assets\XeroCPAsset;
-use thejoshsmith\xero\web\twig\CraftVariableBehavior;
-use thejoshsmith\xero\models\Settings as SettingsModel;
+use thejoshsmith\commerce\xero\controllers\AuthController;
+use thejoshsmith\commerce\xero\web\assets\SendToXeroAsset;
+use thejoshsmith\commerce\xero\web\assets\XeroCPAsset;
+use thejoshsmith\commerce\xero\web\twig\CraftVariableBehavior;
+use thejoshsmith\commerce\xero\models\Settings as SettingsModel;
 
 /**
  * Class Xero
@@ -48,7 +48,7 @@ class Plugin extends CraftPlugin
     /**
      * The plugin handle
      */
-    const HANDLE = 'xero';
+    const HANDLE = 'commerce-xero';
 
     /**
      * The default Xero OAuth callback route
@@ -200,7 +200,7 @@ class Plugin extends CraftPlugin
         // Registers a CP URL used to send an order to Xero
         Event::on(
             UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function (RegisterUrlRulesEvent $event) {
-                $event->rules['sendordertoxero'] = 'xero/base/send-order-to-xero';
+                $event->rules['sendordertoxero'] = Plugin::HANDLE . '/base/send-order-to-xero';
             }
         );
 

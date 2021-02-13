@@ -1,6 +1,6 @@
 <?php
 
-namespace thejoshsmith\xero\models;
+namespace thejoshsmith\commerce\xero\models;
 
 use craft\base\Model;
 

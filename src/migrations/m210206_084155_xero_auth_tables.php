@@ -1,15 +1,15 @@
 <?php
 
-namespace thejoshsmith\xero\migrations;
+namespace thejoshsmith\commerce\xero\migrations;
 
 use craft\db\Table;
 use craft\db\Migration;
-use thejoshsmith\xero\records\Tenant;
-use thejoshsmith\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Tenant;
+use thejoshsmith\commerce\xero\records\Connection;
 
-use thejoshsmith\xero\records\Credential;
-use thejoshsmith\xero\records\AccountCode;
-use thejoshsmith\xero\records\ResourceOwner;
+use thejoshsmith\commerce\xero\records\Credential;
+use thejoshsmith\commerce\xero\records\AccountCode;
+use thejoshsmith\commerce\xero\records\ResourceOwner;
 
 /**
  * m210206_084155_xero_auth_tables migration.

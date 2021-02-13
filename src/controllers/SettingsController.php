@@ -1,9 +1,9 @@
 <?php
 
-namespace thejoshsmith\xero\controllers;
+namespace thejoshsmith\commerce\xero\controllers;
 
 use Craft;
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 use yii\web\Response;
 
 class SettingsController extends BaseController
@@ -31,7 +31,7 @@ class SettingsController extends BaseController
             'settings' => $settings
         ];
 
-        return $this->renderTemplate('xero/settings/_index', $variables);
+        return $this->renderTemplate(Plugin::HANDLE . '/settings/_index', $variables);
     }
 
     /**
@@ -51,10 +51,10 @@ class SettingsController extends BaseController
 
         if (!$settings->validate()) {
             Craft::$app->getSession()->setError(
-                Craft::t('xero', 'Couldn’t save settings.')
+                Plugin::t('Couldn’t save settings.')
             );
             return $this->renderTemplate(
-                'xero/settings/_index', compact('settings')
+                Plugin::HANDLE . '/settings/_index', compact('settings')
             );
         }
 
@@ -64,17 +64,15 @@ class SettingsController extends BaseController
 
         if (!$pluginSettingsSaved) {
             Craft::$app->getSession()->setError(
-                Craft::t(
-                    'xero', 'Couldn’t save settings.'
-                )
+                Plugin::t('Couldn’t save settings.')
             );
             return $this->renderTemplate(
-                'xero/settings/_index', compact('settings')
+                Plugin::HANDLE . '/settings/_index', compact('settings')
             );
         }
 
         Craft::$app->getSession()->setNotice(
-            Craft::t('xero', 'Settings saved.')
+            Plugin::t('Settings saved.')
         );
 
         return $this->redirectToPostedUrl();

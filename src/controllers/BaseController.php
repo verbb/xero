@@ -8,9 +8,9 @@
  * @copyright Copyright (c) 2019 Myles Derham
  */
 
-namespace thejoshsmith\xero\controllers;
+namespace thejoshsmith\commerce\xero\controllers;
 
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 
 use craft\commerce\Plugin as Commerce;
 
@@ -28,14 +28,13 @@ class BaseController extends Controller
      */
     public function init()
     {
+        $this->requireLogin();
         $this->requirePermission('accessPlugin-xero');
         parent::init();
     }
 
     public function actionSendOrderToXero()
     {
-        $this->requireLogin();
-
         $orderId = Craft::$app->request->getParam('orderId');
         if ($orderId) {
             try {

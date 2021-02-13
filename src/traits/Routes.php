@@ -10,14 +10,15 @@
  * @package   CraftCommerceXero
  * @author    Josh Smith <by@joshthe.dev>
  * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @version   GIT: $Id$
  * @link      https://joshthe.dev
  * @since     1.0.0
  */
 
-namespace thejoshsmith\xero\traits;
+namespace thejoshsmith\commerce\xero\traits;
 
+use thejoshsmith\commerce\xero\Plugin;
 use craft\events\RegisterUrlRulesEvent;
 use craft\web\UrlManager;
 use yii\base\Event;
@@ -28,7 +29,7 @@ use yii\base\Event;
  * @category Traits
  * @package  CraftCommerceXero
  * @author   Josh Smith <by@joshthe.dev>
- * @license  Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license  Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @link     https://joshthe.dev
  * @since    1.0.0
  */
@@ -46,12 +47,12 @@ trait Routes
     {
         Event::on(
             UrlManager::class, UrlManager::EVENT_REGISTER_CP_URL_RULES, function (RegisterUrlRulesEvent $event) {
-                $event->rules['xero'] = ['template' => 'xero/index'];
-                $event->rules['xero/organisation'] = 'xero/organisation/index';
-                $event->rules['xero/connections/update'] = 'xero/connections/update';
-                $event->rules['xero/connections/disconnect'] = 'xero/connections/disconnect';
-                $event->rules['xero/settings'] = 'xero/settings/edit';
-                $event->rules['xero/auth'] = 'xero/auth/index';
+                $event->rules['xero'] = ['template' => Plugin::HANDLE . '/index'];
+                $event->rules['xero/organisation'] = Plugin::HANDLE . '/organisation/index';
+                $event->rules['xero/connections/update'] = Plugin::HANDLE . '/connections/update';
+                $event->rules['xero/connections/disconnect'] = Plugin::HANDLE . '/connections/disconnect';
+                $event->rules['xero/settings'] = Plugin::HANDLE . '/settings/edit';
+                $event->rules['xero/auth'] = Plugin::HANDLE . '/auth/index';
             }
         );
     }

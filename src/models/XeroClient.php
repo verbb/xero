@@ -1,15 +1,15 @@
 <?php
 
-namespace thejoshsmith\xero\models;
+namespace thejoshsmith\commerce\xero\models;
 
 use XeroPHP\Application;
 use craft\base\Component;
-use thejoshsmith\xero\factories\XeroClient as FactoriesXeroClient;
-use thejoshsmith\xero\models\OrganisationSettings;
-use thejoshsmith\xero\records\Connection;
-use thejoshsmith\xero\records\Credential;
-use thejoshsmith\xero\records\ResourceOwner;
-use thejoshsmith\xero\records\Tenant;
+use thejoshsmith\commerce\xero\factories\XeroClient as FactoriesXeroClient;
+use thejoshsmith\commerce\xero\models\OrganisationSettings;
+use thejoshsmith\commerce\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Credential;
+use thejoshsmith\commerce\xero\records\ResourceOwner;
+use thejoshsmith\commerce\xero\records\Tenant;
 
 /**
  * Data model that wraps plugin records and the Xero Application

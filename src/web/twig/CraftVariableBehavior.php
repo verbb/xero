@@ -1,8 +1,8 @@
 <?php
 
-namespace thejoshsmith\xero\web\twig;
+namespace thejoshsmith\commerce\xero\web\twig;
 
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 
 use yii\base\Behavior;
 

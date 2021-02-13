@@ -1,6 +1,6 @@
 <?php
 
-namespace thejoshsmith\xero\records;
+namespace thejoshsmith\commerce\xero\records;
 
 use craft\db\ActiveRecord;
 

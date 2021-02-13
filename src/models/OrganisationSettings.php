@@ -1,9 +1,9 @@
 <?php
 
-namespace thejoshsmith\xero\models;
+namespace thejoshsmith\commerce\xero\models;
 
 use craft\base\Model;
-use thejoshsmith\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Connection;
 
 class OrganisationSettings extends Model
 {

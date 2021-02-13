@@ -1,6 +1,6 @@
 <?php
 
-namespace thejoshsmith\xero\traits;
+namespace thejoshsmith\commerce\xero\traits;
 
 use Calcinai\OAuth2\Client\XeroResourceOwner;
 use League\OAuth2\Client\Provider\AbstractProvider;
@@ -18,7 +18,7 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
  * @package   CraftCommerceXero
  * @author    Josh Smith <by@joshthe.dev>
  * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @version   GIT: $Id$
  * @link      https://joshthe.dev
  * @since     1.0.0
@@ -30,7 +30,7 @@ use League\OAuth2\Client\Token\AccessTokenInterface;
   * @category Traits
   * @package  CraftCommerceXero
   * @author   Josh Smith <by@joshthe.dev>
-  * @license  Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+  * @license  Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
   * @link     https://joshthe.dev
   * @since    1.0.0
   */

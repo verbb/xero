@@ -10,19 +10,19 @@
  * @package   CraftCommerceXero
  * @author    Josh Smith <by@joshthe.dev>
  * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @version   GIT: $Id$
  * @link      https://joshthe.dev
  * @since     1.0.0
  */
 
-namespace thejoshsmith\xero\traits;
+namespace thejoshsmith\commerce\xero\traits;
 
-use thejoshsmith\xero\Plugin;
-use thejoshsmith\xero\factories\XeroClient as XeroClientFactory;
-use thejoshsmith\xero\services\XeroAPI as XeroAPIService;
-use thejoshsmith\xero\services\XeroOAuth as XeroOAuthService;
-use thejoshsmith\xero\services\XeroConnections as XeroConnectionsService;
+use thejoshsmith\commerce\xero\Plugin;
+use thejoshsmith\commerce\xero\factories\XeroClient as XeroClientFactory;
+use thejoshsmith\commerce\xero\services\XeroAPI as XeroAPIService;
+use thejoshsmith\commerce\xero\services\XeroOAuth as XeroOAuthService;
+use thejoshsmith\commerce\xero\services\XeroConnections as XeroConnectionsService;
 
 use Craft;
 use craft\helpers\UrlHelper;
@@ -34,7 +34,7 @@ use yii\base\Exception;
  * @category Traits
  * @package  CraftCommerceXero
  * @author   Josh Smith <by@joshthe.dev>
- * @license  Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license  Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @link     https://joshthe.dev
  * @since    1.0.0
  */
@@ -122,7 +122,7 @@ trait Services
         // into the the consuming class.
         try {
             Craft::$container->set(
-                'thejoshsmith\xero\models\XeroClient', XeroClientFactory::build()
+                'thejoshsmith\commerce\xero\models\XeroClient', XeroClientFactory::build()
             );
         } catch (Exception $e){
             // Swallow it whole

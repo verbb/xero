@@ -8,14 +8,14 @@
  * @copyright Copyright (c) 2019 Myles Derham
  */
 
-namespace thejoshsmith\xero\migrations;
+namespace thejoshsmith\commerce\xero\migrations;
 
-use thejoshsmith\xero\records\AccountCode;
-use thejoshsmith\xero\records\Connection;
-use thejoshsmith\xero\records\Credential;
-use thejoshsmith\xero\records\Invoice;
-use thejoshsmith\xero\records\ResourceOwner;
-use thejoshsmith\xero\records\Tenant;
+use thejoshsmith\commerce\xero\records\AccountCode;
+use thejoshsmith\commerce\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Credential;
+use thejoshsmith\commerce\xero\records\Invoice;
+use thejoshsmith\commerce\xero\records\ResourceOwner;
+use thejoshsmith\commerce\xero\records\Tenant;
 
 use Craft;
 use craft\config\DbConfig;

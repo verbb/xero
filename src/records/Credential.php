@@ -1,8 +1,8 @@
 <?php
 
-namespace thejoshsmith\xero\records;
+namespace thejoshsmith\commerce\xero\records;
 
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 use craft\db\ActiveRecord;
 use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;

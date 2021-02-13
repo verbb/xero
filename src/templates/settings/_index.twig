@@ -9,7 +9,7 @@
 
 {% block content %}
     <form action="" method="post" accept-charset="UTF-8" data-saveshortcut>
-        <input type="hidden" name="action" value="xero/settings/save-settings">
+        {{ actionInput('commerce-xero/settings/save-settings') }}
         {{ redirectInput('xero/settings') }}
         {{ csrfInput() }}
 

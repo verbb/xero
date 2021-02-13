@@ -1,4 +1,4 @@
-{% do view.registerAssetBundle("thejoshsmith\\xero\\web\\assets\\XeroCPAsset") %}
+{% do view.registerAssetBundle("thejoshsmith\\commerce\\xero\\web\\assets\\XeroCPAsset") %}
 
 {% extends "_layouts/cp" %}
 {% import "_includes/forms" as forms %}
@@ -10,7 +10,7 @@
 {% set fullPageForm = connection ? true : false %}
 
 {% block content %}
-    {{ actionInput('xero/organisation/save-settings') }}
+    {{ actionInput('commerce-xero/organisation/save-settings') }}
 
     {# Xero isn't setup? Direct the user to do that step first #}
     {% if not pluginSettings.xeroClientId and not pluginSettings.xeroClientSecret %}

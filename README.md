@@ -1,4 +1,4 @@
-<p align="center"><img src="./src/icon.svg" width="100" height="100" alt="Xero plugin for Craft Commerce 2"></p>
+<p align="center"><img src="./src/icon.svg" width="100" height="100" alt="Xero plugin for Craft Commerce 3"></p>
 
 # Xero plugin for Craft Commerce 2 & 3
 
@@ -6,7 +6,7 @@
 This plugin allows you to automatically send Commerce invoices into Xero including contacts, payments and even inventory updates.
 
 ### Installation
-`composer require thejoshsmith/craft-commerce-xero`
+`composer require thejoshsmith/commerce-xero`
 
 ### Getting Started
 You'll need to sign up for a free Xero account and add a OAuth 2.0 Xero App. You can view Xero's <a href="https://developer.xero.com/documentation/getting-started/getting-started-guide">getting started guide here</a>.

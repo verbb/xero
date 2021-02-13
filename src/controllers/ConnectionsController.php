@@ -10,21 +10,23 @@
  * @package   CraftCommerceXero
  * @author    Josh Smith <by@joshthe.dev>
  * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/craft-commerce-xero/blob/master/LICENSE.md
+ * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
  * @version   GIT: $Id$
  * @link      https://joshthe.dev
  * @since     1.0.0
  */
 
-namespace thejoshsmith\xero\controllers;
+namespace thejoshsmith\commerce\xero\controllers;
 
-use thejoshsmith\xero\Plugin;
-use thejoshsmith\xero\controllers\BaseController;
+use thejoshsmith\commerce\xero\Plugin;
+use thejoshsmith\commerce\xero\controllers\BaseController;
+use thejoshsmith\commerce\xero\records\Connection;
 
 use Craft;
 
 use yii\web\Response;
 use yii\web\BadRequestHttpException;
+use yii\web\NotFoundHttpException;
 
 /**
  * Connections Controller

@@ -8,7 +8,7 @@
  * @link      https://joshthe.dev/
  */
 
-namespace thejoshsmith\xero\services;
+namespace thejoshsmith\commerce\xero\services;
 
 
 use Craft;
@@ -16,10 +16,10 @@ use craft\base\Component;
 
 use craft\db\ActiveQuery;
 use League\OAuth2\Client\Token\AccessTokenInterface;
-use thejoshsmith\xero\Plugin;
-use thejoshsmith\xero\events\OAuthEvent;
-use thejoshsmith\xero\records\Connection;
-use thejoshsmith\xero\records\Credential;
+use thejoshsmith\commerce\xero\Plugin;
+use thejoshsmith\commerce\xero\events\OAuthEvent;
+use thejoshsmith\commerce\xero\records\Connection;
+use thejoshsmith\commerce\xero\records\Credential;
 
 /**
  * @author  Josh Smith <by@joshthe.dev>

@@ -1,10 +1,10 @@
 <?php
 
-namespace thejoshsmith\xero\factories;
+namespace thejoshsmith\commerce\xero\factories;
 
-use thejoshsmith\xero\Plugin;
-use thejoshsmith\xero\models\XeroClient as XeroClientModel;
-use thejoshsmith\xero\records\Connection;
+use thejoshsmith\commerce\xero\Plugin;
+use thejoshsmith\commerce\xero\models\XeroClient as XeroClientModel;
+use thejoshsmith\commerce\xero\records\Connection;
 
 use XeroPHP\Application as XeroApplication;
 

@@ -8,7 +8,7 @@
  * @link      https://www.mylesderham.dev/
  */
 
-namespace thejoshsmith\xero\services;
+namespace thejoshsmith\commerce\xero\services;
 
 use Craft;
 use Throwable;
@@ -16,22 +16,22 @@ use Throwable;
 use yii\base\Exception;
 
 use craft\base\Component;
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 use craft\commerce\elements\Order;
 use XeroPHP\Models\Accounting\Account;
 use XeroPHP\Models\Accounting\Contact;
 
 use XeroPHP\Models\Accounting\Invoice;
 use XeroPHP\Models\Accounting\Payment;
-use thejoshsmith\xero\models\XeroClient;
-use thejoshsmith\xero\records\Connection;
+use thejoshsmith\commerce\xero\models\XeroClient;
+use thejoshsmith\commerce\xero\records\Connection;
 use XeroPHP\Application as XeroApplication;
 use XeroPHP\Models\Accounting\LineItem;
 use XeroPHP\Remote\Exception\ForbiddenException;
-use thejoshsmith\xero\helpers\Xero as XeroHelper;
+use thejoshsmith\commerce\xero\helpers\Xero as XeroHelper;
 use XeroPHP\Remote\Exception\BadRequestException;
 use XeroPHP\Remote\Exception\NotAvailableException;
-use thejoshsmith\xero\records\Invoice as InvoiceRecord;
+use thejoshsmith\commerce\xero\records\Invoice as InvoiceRecord;
 use XeroPHP\Remote\Exception\RateLimitExceededException;
 use XeroPHP\Remote\Exception\OrganisationOfflineException;
 

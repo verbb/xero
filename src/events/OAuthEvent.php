@@ -1,6 +1,6 @@
 <?php
 
-namespace thejoshsmith\xero\events;
+namespace thejoshsmith\commerce\xero\events;
 
 use yii\base\Event;
 

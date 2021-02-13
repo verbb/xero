@@ -4,9 +4,9 @@
  * @license   https://craftcms.github.io/license/
  */
 
-namespace thejoshsmith\xero\jobs;
+namespace thejoshsmith\commerce\xero\jobs;
 
-use thejoshsmith\xero\Plugin;
+use thejoshsmith\commerce\xero\Plugin;
 
 use Craft;
 use craft\queue\BaseJob;
@@ -28,7 +28,7 @@ class SendToXeroJob extends BaseJob
 
     protected function defaultDescription()
     {
-        return Craft::t('xero', 'Send Order to Xero');
+        return Plugin::t('Send Order to Xero');
     }
 
 

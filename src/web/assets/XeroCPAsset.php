@@ -1,5 +1,5 @@
 <?php
-namespace thejoshsmith\xero\web\assets;
+namespace thejoshsmith\commerce\xero\web\assets;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
@@ -9,7 +9,7 @@ class XeroCPAsset extends AssetBundle
     public function init()
     {
         // define the path that your publishable resources live
-        $this->sourcePath = '@thejoshsmith/xero/web/assets/dist';
+        $this->sourcePath = '@thejoshsmith/commerce/xero/web/assets/dist';
 
         // define the dependencies
         $this->depends = [
