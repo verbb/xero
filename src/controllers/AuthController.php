@@ -130,6 +130,8 @@ class AuthController extends BaseController
             // Fire a 'afterSaveOAuth' event
             $this->trigger(self::EVENT_AFTER_SAVE_OAUTH, $event);
 
+            Craft::$app->getSession()->setNotice('Xero connection successfully saved');
+
         } catch (XeroProviderException | Throwable $xpe) {
             Craft::error(
                 $xpe->getMessage(),
@@ -137,8 +139,6 @@ class AuthController extends BaseController
             );
             Craft::$app->getSession()->setError('Something went wrong connecting to Xero, please try again');
         }
-
-        Craft::$app->getSession()->setNotice('Xero connection successfully saved');
 
         return $this->redirect(UrlHelper::cpUrl('xero'));
     }
