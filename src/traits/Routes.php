@@ -52,7 +52,7 @@ trait Routes
                 $event->rules['xero/connections/update'] = Plugin::HANDLE . '/connections/update';
                 $event->rules['xero/connections/disconnect'] = Plugin::HANDLE . '/connections/disconnect';
                 $event->rules['xero/settings'] = Plugin::HANDLE . '/settings/edit';
-                $event->rules['xero/auth'] = Plugin::HANDLE . '/auth/index';
+                $event->rules[Plugin::XERO_OAUTH_CALLBACK_ROUTE] = Plugin::HANDLE . '/auth/index';
             }
         );
     }
