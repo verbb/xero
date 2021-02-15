@@ -1,5 +1,11 @@
 # Release Notes for Craft Commerce Xero
 
+## 1.0.1 - 2021-02-15
+### Fixed
+- Fixed an issue where cp nav item wasn't showing sub menu
+- Fixed a minor issue where a successful connection saved notice was always shown, even if it wasn't the case
+- Improved robustness of selecting the current organisation with a db transaction
+
 ## 1.0.0 - 2021-02-13
 ### Changed
 - Plugin has been shifted to a new repository `thejoshsmith/commerce-xero`
