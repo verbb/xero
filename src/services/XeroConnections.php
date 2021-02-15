@@ -211,18 +211,27 @@ class XeroConnections extends Component
      */
     public function markAsSelected(int $connectionId): Connection
     {
-        Connection::updateAll([
-            'selected' => 0
-        ]);
+        $transaction = Craft::$app->getDb()->beginTransaction();
 
-        $connection = $this->getConnectionById($connectionId);
+        try {
+            Connection::updateAll([
+                'selected' => 0
+            ]);
 
-        if (empty($connection)) {
-            throw new Exception('Connection not found.');
+            $connection = $this->getConnectionById($connectionId);
+
+            if (empty($connection)) {
+                throw new Exception('Connection not found.');
+            }
+
+            $connection->selected = 1;
+            $connection->save();
+
+            $transaction->commit();
+        } catch (Exception $e) {
+            $transaction->rollback();
+            throw $e;
         }
-
-        $connection->selected = 1;
-        $connection->save();
 
         return $connection;
     }
