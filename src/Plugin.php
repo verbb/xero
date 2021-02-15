@@ -136,6 +136,7 @@ class Plugin extends CraftPlugin
         $ret = parent::getCpNavItem();
 
         $ret['label'] = self::t('Xero');
+        $ret['url'] = 'xero';
 
         if (Craft::$app->getUser()->checkPermission('accessPlugin-xero')) {
             $ret['subnav']['organisation'] = [
