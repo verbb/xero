@@ -14,12 +14,13 @@ namespace thejoshsmith\commerce\xero\services;
 use Craft;
 use craft\base\Component;
 
-use craft\db\ActiveQuery;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 use thejoshsmith\commerce\xero\Plugin;
 use thejoshsmith\commerce\xero\events\OAuthEvent;
 use thejoshsmith\commerce\xero\records\Connection;
 use thejoshsmith\commerce\xero\records\Credential;
+
+use yii\base\Exception;
 
 /**
  * @author  Josh Smith <by@joshthe.dev>
@@ -49,7 +50,7 @@ class XeroConnections extends Component
         return Connection::find()
             ->innerJoinWith('tenant')
             ->orderBy($orderBy)
-        ->all();
+            ->all();
     }
 
     /**
@@ -82,9 +83,11 @@ class XeroConnections extends Component
      */
     public function disableAllConnections(): void
     {
-        Connection::updateAll([
+        Connection::updateAll(
+            [
             'status' => Connection::STATUS_DISCONNECTED
-        ]);
+            ]
+        );
     }
 
     /**
@@ -124,14 +127,17 @@ class XeroConnections extends Component
         // Find the connection related to the selected tenant
         $connection = Connection::find()
             ->innerJoinWith('tenant')
-            ->where([
+            ->where(
+                [
                 'xero_tenants.tenantId' => $selectedTenant->tenantId
-            ])->one();
+                ]
+            )->one();
 
         if (empty($connection)) {
             throw new Exception(
                 'Unable to set connection as selected as it could not be found.
-            ');
+            '
+            );
         }
 
         $this->markAsSelected($connection->id);
@@ -141,7 +147,7 @@ class XeroConnections extends Component
     /**
      * Returns a connection record
      *
-     * @param  int    $id Id of the connection to fetch
+     * @param int $id Id of the connection to fetch
      *
      * @return Connection
      */
@@ -214,9 +220,11 @@ class XeroConnections extends Component
         $transaction = Craft::$app->getDb()->beginTransaction();
 
         try {
-            Connection::updateAll([
+            Connection::updateAll(
+                [
                 'selected' => 0
-            ]);
+                ]
+            );
 
             $connection = $this->getConnectionById($connectionId);
 

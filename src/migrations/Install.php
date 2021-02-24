@@ -10,7 +10,6 @@
 
 namespace thejoshsmith\commerce\xero\migrations;
 
-use thejoshsmith\commerce\xero\records\AccountCode;
 use thejoshsmith\commerce\xero\records\Connection;
 use thejoshsmith\commerce\xero\records\Credential;
 use thejoshsmith\commerce\xero\records\Invoice;
@@ -18,7 +17,6 @@ use thejoshsmith\commerce\xero\records\ResourceOwner;
 use thejoshsmith\commerce\xero\records\Tenant;
 
 use Craft;
-use craft\config\DbConfig;
 use craft\db\Migration;
 use craft\db\Table;
 
@@ -110,7 +108,7 @@ class Install extends Migration
                 'tenantId' => $this->integer()->notNull(),
                 'userId' => $this->integer()->notNull(),
                 'siteId' => $this->integer()->notNull(),
-                'settings' => $this->longText()->notNull(),
+                'settings' => $this->longText()->null(),
                 'selected' => $this->boolean()->notNull()->defaultValue(false),
                 'enabled' => $this->boolean()->notNull()->defaultValue(false),
                 'status' => $this->enum('status', ['connected', 'disconnected', 'expired'])

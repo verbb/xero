@@ -28,7 +28,7 @@
 
         <h2>Connect to Xero</h2>
         <p>To get started, you'll need to connect your Xero organisation to Craft. Use the button below to start the authentication process.</p>
-        <a class="btn submit" href="{{siteUrl('admin/xero/auth')}}">Connect to Xero</a>
+        <a class="btn submit" href="{{cpUrl('xero/auth')}}">Connect to Xero</a>
 
     {% else %}
         {% if connection and orgSettings %}

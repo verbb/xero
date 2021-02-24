@@ -2,13 +2,13 @@
 
 namespace thejoshsmith\commerce\xero\migrations;
 
+use Craft;
 use craft\db\Table;
 use craft\db\Migration;
+
 use thejoshsmith\commerce\xero\records\Tenant;
 use thejoshsmith\commerce\xero\records\Connection;
-
 use thejoshsmith\commerce\xero\records\Credential;
-use thejoshsmith\commerce\xero\records\AccountCode;
 use thejoshsmith\commerce\xero\records\ResourceOwner;
 
 /**

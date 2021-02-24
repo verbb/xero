@@ -4,7 +4,6 @@ namespace thejoshsmith\commerce\xero\traits;
 
 use Calcinai\OAuth2\Client\XeroResourceOwner;
 use League\OAuth2\Client\Provider\AbstractProvider;
-use League\OAuth2\Client\Token\AccessToken;
 use League\OAuth2\Client\Token\AccessTokenInterface;
 
 /**
@@ -94,7 +93,7 @@ trait XeroOAuth
 
     /**
      * Returns the OAuth state
-     * 
+     *
      * @return array
      */
     public function getState(): string
@@ -105,8 +104,8 @@ trait XeroOAuth
     /**
      * Returns an authorization URL
      *
-     * @param  array $params
-     * 
+     * @param array $params
+     *
      * @return string
      */
     public function getAuthorizationUrl(array $params = []): string
@@ -116,9 +115,9 @@ trait XeroOAuth
 
     /**
      * Returns an Access Token
-     * 
-     * @param  array  $params An array of params
-     * 
+     *
+     * @param array $params An array of params
+     *
      * @return AccessTokenInterface
      */
     public function getAccessToken(array $params = []): AccessTokenInterface
@@ -148,10 +147,10 @@ trait XeroOAuth
 
     /**
      * Returns the authorised tenants
-     * 
-     * @param  AccessTokenInterface $accessToken Access Token
-     * @param  array                $params      Request Params
-     * 
+     *
+     * @param AccessTokenInterface $accessToken Access Token
+     * @param array                $params      Request Params
+     *
      * @return array
      */
     public function getTenants(AccessTokenInterface $accessToken, array $params = null): array
@@ -162,8 +161,8 @@ trait XeroOAuth
     /**
      * Returns the Resource Owner
      *
-     * @param  AccessTokenInterface $accessToken Access Token
-     * @param  array                $params      Request Params
+     * @param AccessTokenInterface $accessToken Access Token
+     * @param array                $params      Request Params
      *
      * @return ResourceOwner
      */

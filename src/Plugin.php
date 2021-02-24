@@ -73,7 +73,7 @@ class Plugin extends CraftPlugin
     // Public Properties
     // =========================================================================
 
-    public $schemaVersion = '1.1.0';
+    public $schemaVersion = '1.2.0';
 
     // Traits
     // =========================================================================

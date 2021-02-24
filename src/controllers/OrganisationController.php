@@ -114,7 +114,7 @@ class OrganisationController extends BaseController
         }
 
         // Todo, move this to a service
-        $connection->enabled = $data['enabled'] ?? false;
+        $connection->enabled = empty($data['enabled']) ? false : (int) $data['enabled'];
         $connection->settings = $orgSettings->attributes;
         $connection->save();
 
