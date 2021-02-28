@@ -16,19 +16,20 @@ namespace thejoshsmith\commerce\xero;
 use Craft;
 use craft\web\View;
 use yii\base\Event;
+use yii\base\Exception;
 use craft\web\UrlManager;
+use craft\helpers\UrlHelper;
+
 use craft\events\TemplateEvent;
 use craft\commerce\elements\Order;
-
-use thejoshsmith\commerce\xero\traits\Routes;
 use craft\base\Plugin as CraftPlugin;
-use thejoshsmith\commerce\xero\traits\Services;
 use craft\events\RegisterUrlRulesEvent;
-use craft\helpers\UrlHelper;
-use thejoshsmith\commerce\xero\events\OAuthEvent;
-use thejoshsmith\commerce\xero\jobs\SendToXeroJob;
 use craft\web\twig\variables\CraftVariable;
+use thejoshsmith\commerce\xero\traits\Routes;
+use thejoshsmith\commerce\xero\traits\Services;
+use thejoshsmith\commerce\xero\events\OAuthEvent;
 
+use thejoshsmith\commerce\xero\jobs\SendToXeroJob;
 use thejoshsmith\commerce\xero\controllers\AuthController;
 use thejoshsmith\commerce\xero\web\assets\SendToXeroAsset;
 use thejoshsmith\commerce\xero\web\twig\CraftVariableBehavior;
@@ -191,7 +192,11 @@ class Plugin extends CraftPlugin
         // Disconnect other current connections each time the user connects other tenants
         Event::on(
             AuthController::class, AuthController::EVENT_AFTER_SAVE_OAUTH, function (OAuthEvent $event) {
-                $this->getXeroConnections()->handleAfterSaveOAuthEvent($event);
+                try {
+                    $this->getXeroConnections()->handleAfterSaveOAuthEvent($event);
+                } catch (Exception $e) {
+                    Craft::error($e->getMessage(), __METHOD__);
+                }
             }
         );
     }

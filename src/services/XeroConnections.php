@@ -222,7 +222,7 @@ class XeroConnections extends Component
         try {
             Connection::updateAll(
                 [
-                'selected' => 0
+                'selected' => false
                 ]
             );
 
@@ -232,7 +232,15 @@ class XeroConnections extends Component
                 throw new Exception('Connection not found.');
             }
 
-            $connection->selected = 1;
+            $connection->selected = true;
+
+            if (! $connection->validate() ) {
+                throw new Exception(
+                    'A validation error occurred when marking
+                    the connection as selected.'
+                );
+            }
+
             $connection->save();
 
             $transaction->commit();

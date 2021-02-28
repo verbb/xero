@@ -45,7 +45,8 @@ class Connection extends ActiveRecord
         return [
             [['connectionId', 'credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId'], 'required', 'on' => self::SCENARIO_DEFAULT],
             [['id'], 'required', 'on' => self::SCENARIO_PATCH],
-            [['credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId', 'selected', 'enabled'], 'integer'],
+            [['credentialId', 'resourceOwnerId', 'tenantId', 'userId', 'siteId'], 'integer'],
+            [['selected', 'enabled'], 'boolean'],
             [['connectionId', 'status'], 'string'],
         ];
     }

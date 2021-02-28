@@ -105,13 +105,7 @@ class OrganisationController extends BaseController
         $orgSettings->attributes = $data;
 
         if (! $orgSettings->validate()) {
-            $this->setFailFlash(Plugin::t('Couldn’t save organisation settings.'));
-
-            Craft::$app
-                ->getUrlManager()
-                ->setRouteParams(['orgSettings' => $orgSettings]);
-
-            return null;
+            return $this->_redirectError($orgSettings, $orgSettings->getErrors());
         }
 
         $xeroConnections = Plugin::getInstance()->getXeroConnections();
@@ -122,11 +116,48 @@ class OrganisationController extends BaseController
         }
 
         // Todo, move this to a service
-        $connection->enabled = empty($data['enabled']) ? false : (int) $data['enabled'];
+        $connection->enabled = empty($data['enabled'])
+            ? (bool) $connection->enabled
+            : (bool) $data['enabled'];
+
+        $connection->selected = empty($data['selected'])
+            ? (bool) $connection->selected
+            : (bool) $data['selected'];
+
         $connection->settings = $orgSettings->attributes;
+
+        if (! $connection->validate()) {
+            return $this->_redirectError($orgSettings, $connection->getErrors());
+        }
+
         $connection->save();
 
         $this->setSuccessFlash(Plugin::t('Organisation Settings saved.'));
         return $this->redirectToPostedUrl();
+    }
+
+    /**
+     * Handles controller save errors
+     *
+     * @param OrganisationSettingsModel $orgSettings Organisation Settings model
+     *
+     * @return void
+     */
+    private function _redirectError(
+        OrganisationSettingsModel $orgSettings,
+        array $errors = []
+    ) {
+        Craft::error(
+            'Failed to save organisation settings with validation errors: '
+            . json_encode($errors)
+        );
+
+        $this->setFailFlash(Plugin::t('Couldn’t save organisation settings.'));
+
+        Craft::$app
+            ->getUrlManager()
+            ->setRouteParams(['orgSettings' => $orgSettings]);
+
+        return null;
     }
 }
