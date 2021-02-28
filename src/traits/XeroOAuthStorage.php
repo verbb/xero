@@ -71,7 +71,7 @@ trait XeroOAuthStorage
         }
 
         $connections = [];
-        // $transaction = Craft::$app->getDb()->beginTransaction();
+        $transaction = Craft::$app->getDb()->beginTransaction();
 
         // Check if the user is re-authing an existing connection
         if (empty($xeroTenants)) {
@@ -83,7 +83,7 @@ trait XeroOAuthStorage
                 return $connections;
             }
 
-            // try {
+            try {
                 $credential = $this->saveAccessToken($accessToken);
                 $connection = $this->saveConnection(
                     $connection->connectionId,
@@ -94,34 +94,34 @@ trait XeroOAuthStorage
                     $siteId
                 );
                 $transaction->commit();
-            // } catch(\Exception $e) {
+            } catch(\Exception $e) {
                 $transaction->rollBack();
-            // }
+            }
 
             return [$connection];
         }
 
-        // try {
+        try {
             $resourceOwner = $this->saveResourceOwner($identity);
             $credential = $this->saveAccessToken($accessToken);
 
             // Now, save each tenant connection
-        foreach ($xeroTenants as $xeroTenant) {
-            $tenant = $this->saveTenant($xeroTenant);
-            $connections[] = $this->saveConnection(
-                $xeroTenant->id,
-                $resourceOwner,
-                $credential,
-                $tenant,
-                $userId,
-                $siteId
-            );
-        }
+            foreach ($xeroTenants as $xeroTenant) {
+                $tenant = $this->saveTenant($xeroTenant);
+                $connections[] = $this->saveConnection(
+                    $xeroTenant->id,
+                    $resourceOwner,
+                    $credential,
+                    $tenant,
+                    $userId,
+                    $siteId
+                );
+            }
 
-            // $transaction->commit();
-        // } catch(\Exception $e) {
-            // $transaction->rollBack();
-        // }
+            $transaction->commit();
+        } catch(\Exception $e) {
+            $transaction->rollBack();
+        }
 
         return $connections;
     }
