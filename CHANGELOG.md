@@ -1,4 +1,8 @@
 # Release Notes for Craft Commerce Xero
+## 1.0.3 - 2021-02-28
+### Fixed
+- Fixed an issue with PostgreSQL where boolean values were cast as integers and therefore failed model validation
+- Re-enabled db transaction when saving connections
 
 ## 1.0.2 - 2021-02-28
 ### Changed
