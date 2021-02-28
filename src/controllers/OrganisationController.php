@@ -49,6 +49,13 @@ class OrganisationController extends BaseController
         $connection = $xeroConnections->getCurrentConnection();
         $connections = $xeroConnections->getAllConnections();
 
+        // Check whether meta instruction tooltips are supported
+        $supportsMetaInstructions = version_compare(
+            Craft::$app->version,
+            '3.5.17',
+            '>='
+        );
+
         $accounts = null;
 
         // Create a new settings model
@@ -71,7 +78,8 @@ class OrganisationController extends BaseController
                 'orgSettings',
                 'connection',
                 'connections',
-                'accounts'
+                'accounts',
+                'supportsMetaInstructions'
             )
         );
     }
