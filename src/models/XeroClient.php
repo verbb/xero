@@ -4,6 +4,7 @@ namespace thejoshsmith\commerce\xero\models;
 
 use XeroPHP\Application;
 use craft\base\Component;
+use Exception;
 use thejoshsmith\commerce\xero\factories\XeroClient as FactoriesXeroClient;
 use thejoshsmith\commerce\xero\models\OrganisationSettings;
 use thejoshsmith\commerce\xero\records\Connection;
@@ -29,8 +30,13 @@ class XeroClient extends Component
     /**
      * Constructor
      *
-     * @param Application $application Configured Xero Application
-     * @param Connection  $connection  Connection Record
+     * @param Application          $application   Configured Xero Application
+     * @param Connection           $connection    Connection Record
+     * @param Credential           $credential    Credential Record
+     * @param ResourceOwner        $resourceOwner Resource Owner Record
+     * @param Tenant               $tenant        Tenant Record
+     * @param OrganisationSettings $orgSettings   Organisation Settings Model
+     * @param array                $config        An array of config settings
      */
     public function __construct(
         Application $application,
@@ -98,7 +104,7 @@ class XeroClient extends Component
 
         $credential->refreshAccessToken();
         $this->setApplication(
-            FactoriesXeroClient::buildApplication($credential, $tenant)
+            FactoriesXeroClient::buildApplication($credential->accessToken, $tenant->tenantId)
         );
     }
 

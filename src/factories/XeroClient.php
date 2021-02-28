@@ -4,11 +4,9 @@ namespace thejoshsmith\commerce\xero\factories;
 
 use thejoshsmith\commerce\xero\Plugin;
 use thejoshsmith\commerce\xero\models\XeroClient as XeroClientModel;
-use thejoshsmith\commerce\xero\records\Connection;
 
 use XeroPHP\Application as XeroApplication;
 
-use Craft;
 use yii\base\Exception;
 
 /**
@@ -49,7 +47,7 @@ class XeroClient
         $credential = $connection->credential;
         $resourceOwner = $connection->resourceOwner;
 
-        $application = self::buildApplication($credential, $tenant);
+        $application = self::buildApplication($credential->accessToken, $tenant->tenantId);
 
         return new XeroClientModel(
             $application,
@@ -60,11 +58,13 @@ class XeroClient
         );
     }
 
-    public static function buildApplication($credential, $tenant)
-    {
+    public static function buildApplication(
+        string $accessToken = '',
+        string $tenantId = ''
+    ): XeroApplication {
         return new XeroApplication(
-            $credential->accessToken,
-            $tenant->tenantId
+            $accessToken,
+            $tenantId
         );
     }
 }

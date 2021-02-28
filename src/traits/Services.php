@@ -118,14 +118,29 @@ trait Services
      */
     private function _setDependencies()
     {
-        // Automatically inject an authenticated Xero Client
-        // into the the consuming class.
+        // Automatically inject an authenticated
+        // Xero Client into the consuming class.
         try {
             Craft::$container->set(
-                'thejoshsmith\commerce\xero\models\XeroClient', XeroClientFactory::build()
+                'thejoshsmith\commerce\xero\models\XeroClient',
+                XeroClientFactory::build()
             );
         } catch (Exception $e){
             // Swallow it whole
+        }
+
+        // Defaults the Xero Application to use a blank token and tenantId
+        // We need this to prevent Yii from triggering an exception with
+        // its automatic constructor dependency injection.
+        try {
+            Craft::$container->set(
+                'XeroPHP\Application', XeroClientFactory::buildApplication()
+            );
+        } catch (Exception $e){
+            Craft::error(
+                'Failed to instantiate a Xero Application with error: ' . $e->getMessage(),
+                __METHOD__
+            );
         }
     }
 }
