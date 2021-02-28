@@ -24,13 +24,13 @@ use thejoshsmith\commerce\xero\traits\Routes;
 use craft\base\Plugin as CraftPlugin;
 use thejoshsmith\commerce\xero\traits\Services;
 use craft\events\RegisterUrlRulesEvent;
+use craft\helpers\UrlHelper;
 use thejoshsmith\commerce\xero\events\OAuthEvent;
 use thejoshsmith\commerce\xero\jobs\SendToXeroJob;
 use craft\web\twig\variables\CraftVariable;
 
 use thejoshsmith\commerce\xero\controllers\AuthController;
 use thejoshsmith\commerce\xero\web\assets\SendToXeroAsset;
-use thejoshsmith\commerce\xero\web\assets\XeroCPAsset;
 use thejoshsmith\commerce\xero\web\twig\CraftVariableBehavior;
 use thejoshsmith\commerce\xero\models\Settings as SettingsModel;
 
@@ -158,6 +158,11 @@ class Plugin extends CraftPlugin
     public function withDecimals($places = 4, $number)
     {
         return number_format((float)$number, $places, '.', '');
+    }
+
+    public function getSettingsResponse()
+    {
+        Craft::$app->controller->redirect(UrlHelper::cpUrl('xero/settings'));
     }
 
     // Protected Methods
