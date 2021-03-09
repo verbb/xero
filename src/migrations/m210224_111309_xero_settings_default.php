@@ -2,7 +2,8 @@
 
 namespace thejoshsmith\commerce\xero\migrations;
 
-use Craft;
+use thejoshsmith\commerce\xero\records\Connection;
+
 use craft\db\Migration;
 
 /**
@@ -15,7 +16,7 @@ class m210224_111309_xero_settings_default extends Migration
      */
     public function safeUp()
     {
-        $this->alterColumn('xero_connections', 'settings', $this->longText()->null());
+        $this->alterColumn(Connection::tableName(), 'settings', $this->longText()->null());
     }
 
     /**
