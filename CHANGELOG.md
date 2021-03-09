@@ -1,4 +1,8 @@
 # Release Notes for Craft Commerce Xero
+## 1.0.4 - 2021-03-09
+### Fixed
+- Fixed an issue with a DB where clause that wasn't using Yii's table prefix syntax.
+
 ## 1.0.3 - 2021-02-28
 ### Fixed
 - Fixed an issue with PostgreSQL where boolean values were cast as integers and therefore failed model validation
