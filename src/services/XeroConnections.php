@@ -129,7 +129,7 @@ class XeroConnections extends Component
             ->innerJoinWith('tenant')
             ->where(
                 [
-                'xero_tenants.tenantId' => $selectedTenant->tenantId
+                '{{%xero_tenants}}.tenantId' => $selectedTenant->tenantId
                 ]
             )->one();
 
