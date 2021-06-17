@@ -13,6 +13,7 @@ namespace thejoshsmith\commerce\xero\services;
 use Craft;
 use thejoshsmith\commerce\xero\events\ContactEvent;
 use thejoshsmith\commerce\xero\events\InvoiceEvent;
+use thejoshsmith\commerce\xero\events\LineItemEvent;
 use Throwable;
 
 use yii\base\Exception;
@@ -53,6 +54,7 @@ class XeroAPI extends Component
     public const EVENT_AFTER_SAVE_CONTACT = 'afterSaveContact';
     public const EVENT_BEFORE_SAVE_INVOICE = 'beforeSaveInvoice';
     public const EVENT_AFTER_SAVE_INVOICE = 'afterSaveInvoice';
+    public const EVENT_BEFORE_ADD_LINE_ITEM = 'beforeAddLineItem';
 
     /**
      * Defines the number of decimals to use
@@ -235,11 +237,20 @@ class XeroAPI extends Component
 
             // TODO: check for line item adjustments
 
-
             // check if product codes should be used and sent (inventory updates)
             if ($this->_client->getOrgSettings()->updateInventory) {
                 $lineItem->setItemCode($orderItem->sku);
             }
+
+            $beforeAddLineItemEvent = new LineItemEvent(
+                [
+                    'xero' => $this,
+                    'lineItem' => $lineItem,
+                    'orderItem' => $orderItem
+                ]
+            );
+            $this->trigger(self::EVENT_BEFORE_ADD_LINE_ITEM, $beforeAddLineItemEvent);
+            $lineItem = $beforeAddLineItemEvent->lineItem;
 
             $invoice->addLineItem($lineItem);
         }
