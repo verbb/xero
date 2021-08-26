@@ -3,8 +3,8 @@
 namespace thejoshsmith\commerce\xero\events;
 
 use craft\commerce\elements\Order;
-use thejoshsmith\commerce\xero\models\Invoice;
 use thejoshsmith\commerce\xero\services\XeroAPI;
+use XeroPHP\Models\Accounting\Invoice;
 use yii\base\Event;
 
 /**
