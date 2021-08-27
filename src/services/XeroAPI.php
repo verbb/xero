@@ -11,6 +11,9 @@
 namespace thejoshsmith\commerce\xero\services;
 
 use Craft;
+use thejoshsmith\commerce\xero\events\ContactEvent;
+use thejoshsmith\commerce\xero\events\InvoiceEvent;
+use thejoshsmith\commerce\xero\events\LineItemEvent;
 use Throwable;
 
 use yii\base\Exception;
@@ -43,6 +46,15 @@ use XeroPHP\Remote\Exception\OrganisationOfflineException;
 class XeroAPI extends Component
 {
     const CACHE_DURATION = 3600; // 1 hour
+
+    /**
+     * Events
+     */
+    public const EVENT_BEFORE_SAVE_CONTACT = 'beforeSaveContact';
+    public const EVENT_AFTER_SAVE_CONTACT = 'afterSaveContact';
+    public const EVENT_BEFORE_SAVE_INVOICE = 'beforeSaveInvoice';
+    public const EVENT_AFTER_SAVE_INVOICE = 'afterSaveInvoice';
+    public const EVENT_BEFORE_ADD_LINE_ITEM = 'beforeAddLineItem';
 
     /**
      * Defines the number of decimals to use
@@ -173,9 +185,29 @@ class XeroAPI extends Component
                     ->setLastName($contactLastName)
                     ->setEmailAddress($contactEmail);
 
-                // TODO: add hook (before_save_contact)
+                // Raise event for before contact save
+                $beforeSaveEvent = new ContactEvent(
+                    [
+                        'xero' => $this,
+                        'contact' => $contact,
+                        'order' => $order
+                    ]
+                );
+                $this->trigger(self::EVENT_BEFORE_SAVE_CONTACT, $beforeSaveEvent);
+                $contact = $beforeSaveEvent->contact;
 
                 $contact->save();
+
+                // Raise event for after contact save
+                $afterSaveEvent = new ContactEvent(
+                    [
+                        'xero' => $this,
+                        'contact' => $contact,
+                        'order' => $order
+                    ]
+                );
+                $this->trigger(self::EVENT_AFTER_SAVE_CONTACT, $afterSaveEvent);
+                $contact = $afterSaveEvent->contact;
             }
             return $contact;
         } catch(Throwable $e) {
@@ -205,11 +237,20 @@ class XeroAPI extends Component
 
             // TODO: check for line item adjustments
 
-
             // check if product codes should be used and sent (inventory updates)
             if ($this->_client->getOrgSettings()->updateInventory) {
                 $lineItem->setItemCode($orderItem->sku);
             }
+
+            $beforeAddLineItemEvent = new LineItemEvent(
+                [
+                    'xero' => $this,
+                    'lineItem' => $lineItem,
+                    'orderItem' => $orderItem
+                ]
+            );
+            $this->trigger(self::EVENT_BEFORE_ADD_LINE_ITEM, $beforeAddLineItemEvent);
+            $lineItem = $beforeAddLineItemEvent->lineItem;
 
             $invoice->addLineItem($lineItem);
         }
@@ -252,7 +293,17 @@ class XeroAPI extends Component
             ->setSentToContact(true)
             ->setDueDate(new \DateTime('NOW'));
 
-        // TODO: add hook (before_invoice_save)
+
+        // Raise event for before invoice save
+        $beforeSaveEvent = new InvoiceEvent(
+            [
+                'xero' => $this,
+                'invoice' => $invoice,
+                'order' => $order
+            ]
+        );
+        $this->trigger(self::EVENT_BEFORE_SAVE_INVOICE, $beforeSaveEvent);
+        $invoice = $beforeSaveEvent->invoice;
 
         try {
             // save the invoice
@@ -284,7 +335,16 @@ class XeroAPI extends Component
             $invoiceRecord->invoiceId = $invoice->InvoiceID;
             $invoiceRecord->save();
 
-            // TODO: add hook (after_invoice_save)
+            // Raise event for after invoice save
+            $afterSaveEvent = new InvoiceEvent(
+                [
+                    'xero' => $this,
+                    'invoice' => $invoice,
+                    'order' => $order
+                ]
+            );
+            $this->trigger(self::EVENT_AFTER_SAVE_INVOICE, $afterSaveEvent);
+            $invoice = $afterSaveEvent->invoice;
 
             return $invoice;
 
