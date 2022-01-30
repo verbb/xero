@@ -47,5 +47,11 @@
       "XeroAPIService": "thejoshsmith\\commerce\\xero\\services\\XeroAPIService"
     },
     "class": "thejoshsmith\\commerce\\xero\\Plugin"
+  },
+  "config": {
+    "allow-plugins": {
+      "yiisoft/yii2-composer": true,
+      "craftcms/plugin-installer": true
+    }
   }
 }
