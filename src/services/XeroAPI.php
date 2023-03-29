@@ -169,7 +169,7 @@ class XeroAPI extends Component
             // an email address, so we need to cater for that scenario
             $address = $order->getBillingAddress() ?: $order->getShippingAddress();
             $contactEmail = $user ? $user->email : $order->getEmail();
-            $contactName = $address->fullName ?? null;
+            $contactName = $address->fullName ?? $contactEmail;
             $contactFirstName = $address->firstName ?? null;
             $contactLastName = $address->lastName ?? null;
 
