@@ -6,6 +6,7 @@
 ### Added
 - Added Organisations view.
 - Added the ability to create multiple organisations, each pushing data to.
+- Add the ability to set invoice status and line item type.
 
 ### Changed
 - Migration to `verbb/xero`.

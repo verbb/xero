@@ -86,6 +86,8 @@ class OrganisationsController extends Controller
             'accountRounding' => $this->request->getParam('accountRounding'),
             'accountDiscounts' => $this->request->getParam('accountDiscounts'),
             'accountAdditionalFees' => $this->request->getParam('accountAdditionalFees'),
+            'accountLineItemTax' => $this->request->getParam('accountLineItemTax'),
+            'accountInvoiceStatus' => $this->request->getParam('accountInvoiceStatus'),
         ]);
 
         if (!$organisationsService->saveOrganisation($organisation)) {

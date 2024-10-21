@@ -50,6 +50,8 @@ class Install extends Migration
             'accountRounding' => $this->string(),
             'accountDiscounts' => $this->string(),
             'accountAdditionalFees' => $this->string(),
+            'accountLineItemTax' => $this->string(),
+            'accountInvoiceStatus' => $this->string(),
             'sortOrder' => $this->smallInteger()->unsigned(),
             'dateCreated' => $this->dateTime()->notNull(),
             'dateUpdated' => $this->dateTime()->notNull(),

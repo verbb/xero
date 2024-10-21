@@ -138,6 +138,33 @@
         errors: organisation.getErrors('accountAdditionalFees'),
     }) }}
 
+    {{ forms.selectField({
+        label: 'Line Item Tax' | t('commerce-xero'),
+        instructions: 'Whether line items inclusive or exclusive of tax.' | t('commerce-xero'),
+        id: 'accountLineItemTax',
+        name: 'accountLineItemTax',
+        options: [
+            { label: 'Exclusive' | t('commerce-xero'), value: 'Exclusive' },
+            { label: 'Inclusive' | t('commerce-xero'), value: 'Inclusive' },
+        ],
+        value: organisation.accountLineItemTax,
+        errors: organisation.getErrors('accountLineItemTax'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Invoices Status' | t('commerce-xero'),
+        instructions: 'Invoice in Xero are created with this status.' | t('commerce-xero'),
+        id: 'accountInvoiceStatus',
+        name: 'accountInvoiceStatus',
+        options: [
+            { label: 'Authorised' | t('commerce-xero'), value: 'AUTHORISED' },
+            { label: 'Submitted' | t('commerce-xero'), value: 'SUBMITTED' },
+            { label: 'Draft' | t('commerce-xero'), value: 'DRAFT' },
+        ],
+        value: organisation.accountInvoiceStatus,
+        errors: organisation.getErrors('accountInvoiceStatus'),
+    }) }}
+
 {% endif %}
 
 {% endblock %}

@@ -24,7 +24,7 @@ class Xero extends Plugin
 
     public bool $hasCpSection = true;
     public bool $hasCpSettings = true;
-    public string $schemaVersion = '1.3.0';
+    public string $schemaVersion = '1.3.1';
 
 
     // Traits

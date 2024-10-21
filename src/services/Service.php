@@ -90,12 +90,12 @@ class Service extends Component
     {
         try {
             $invoice = [
-                'Status' => 'AUTHORISED',
+                'Status' => $organisation->accountInvoiceStatus,
                 'Type' => 'ACCREC',
                 'Contact' => [
                     'ContactID' => $contact['ContactID'],
                 ],
-                'LineAmountType' => 'Exclusive',
+                'LineAmountType' => $organisation->accountLineItemTax,
                 'CurrencyCode' => $order->getPaymentCurrency(),
                 'InvoiceNumber' => $order->reference,
                 'SentToContact' => true,
