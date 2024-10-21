@@ -139,7 +139,7 @@ class Service extends Component
                     ];
                 } else if ($adjustment->type == 'discount') {
                     $invoice['LineItems'][] = [
-                        'AccountCode' => $organisation->accountDiscount,
+                        'AccountCode' => $organisation->accountDiscounts,
                         'Description' => $adjustment->name,
                         'Quantity' => 1,
                         'UnitAmount' => $this->_format($adjustment->amount),
