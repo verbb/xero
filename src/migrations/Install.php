@@ -16,22 +16,19 @@ class Install extends Migration
     public function safeUp(): bool
     {
         // Ensure that the Auth module kicks off setting up tables
-        Auth::$plugin->migrator->up();
+        Auth::getInstance()->migrator->up();
 
         $this->createTables();
-        $this->addForeignKeys();
 
         return true;
     }
 
     public function safeDown(): bool
     {
-        $this->dropProjectConfig();
-        $this->dropForeignKeys();
         $this->dropTables();
 
         // Delete all tokens for this plugin
-        Auth::$plugin->getTokens()->deleteTokensByOwner('commerce-xero');
+        Auth::getInstance()->getTokens()->deleteTokensByOwner('commerce-xero');
 
         return true;
     }

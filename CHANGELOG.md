@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.0 - 2024-10-22
+
+### Changed
+- Now requires Craft 5.0+.
+- Now requires Craft Commerce 5.0+.
+
 ## 2.0.0 - 2024-10-22
 > {note} The plugin’s package name has changed to `verbb/xero`. Xero will need be updated to 2.0 from a terminal, by running `composer require verbb/xero && composer remove thejoshsmith/commerce-xero`.
 

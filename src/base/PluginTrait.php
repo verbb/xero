@@ -7,38 +7,36 @@ use verbb\xero\services\Service;
 
 use Craft;
 
-use yii\log\Logger;
-
-use verbb\auth\Auth;
-use verbb\base\BaseHelper;
+use verbb\base\LogTrait;
+use verbb\base\helpers\Plugin;
 
 trait PluginTrait
 {
     // Static Properties
     // =========================================================================
 
-    public static Xero $plugin;
+    public static ?Xero $plugin = null;
 
 
-    // Public Methods
+    // Traits
     // =========================================================================
 
-    public static function log(string $message, array $attributes = []): void
+    use LogTrait;
+
+
+    // Static Methods
+    // =========================================================================
+
+    public static function config(): array
     {
-        if ($attributes) {
-            $message = Craft::t('commerce-xero', $message, $attributes);
-        }
+        Plugin::bootstrapPlugin('commerce-xero');
 
-        Craft::getLogger()->log($message, Logger::LEVEL_INFO, 'commerce-xero');
-    }
-
-    public static function error(string $message, array $attributes = []): void
-    {
-        if ($attributes) {
-            $message = Craft::t('commerce-xero', $message, $attributes);
-        }
-
-        Craft::getLogger()->log($message, Logger::LEVEL_ERROR, 'commerce-xero');
+        return [
+            'components' => [
+                'organisations' => Organisations::class,
+                'service' => Service::class,
+            ],
+        ];
     }
 
 
@@ -53,26 +51,6 @@ trait PluginTrait
     public function getService(): Service
     {
         return $this->get('service');
-    }
-
-
-    // Private Methods
-    // =========================================================================
-
-    private function _setPluginComponents(): void
-    {
-        $this->setComponents([
-            'organisations' => Organisations::class,
-            'service' => Service::class,
-        ]);
-
-        Auth::registerModule();
-        BaseHelper::registerModule();
-    }
-
-    private function _setLogging(): void
-    {
-        BaseHelper::setFileLogging('commerce-xero');
     }
 
 }

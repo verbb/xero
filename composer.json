@@ -2,7 +2,7 @@
     "name": "verbb/xero",
     "description": "Send invoices to Xero including contacts, payments and even inventory updates.",
     "type": "craft-plugin",
-    "version": "2.0.0",
+    "version": "3.0.0",
     "keywords": [
         "craft",
         "cms",
@@ -33,11 +33,11 @@
         }
     ],
     "require": {
-        "php": "^8.0.2",
-        "craftcms/cms": "^4.0.0",
-        "craftcms/commerce": "^4.0.0",
-        "verbb/auth": "^1.0.0",
-        "verbb/base": "^2.0.0"
+        "php": "^8.2",
+        "craftcms/cms": "^5.0.0",
+        "craftcms/commerce": "^5.0.0",
+        "verbb/auth": "^2.0.0",
+        "verbb/base": "^3.0.0"
     },
     "autoload": {
         "psr-4": {
@@ -47,7 +47,7 @@
     "extra": {
         "name": "Xero",
         "handle": "commerce-xero",
-        "changelogUrl": "https://raw.githubusercontent.com/verbb/xero/craft-4/CHANGELOG.md",
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/xero/craft-5/CHANGELOG.md",
         "class": "verbb\\xero\\Xero"
     }
 }

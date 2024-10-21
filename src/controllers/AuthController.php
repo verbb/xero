@@ -46,7 +46,7 @@ class AuthController extends Controller
             // Keep track of which organisation instance is for, so we can fetch it in the callback
             Session::set('organisationId', $organisationId);
 
-            return Auth::$plugin->getOAuth()->connect('commerce-xero', $organisation);
+            return Auth::getInstance()->getOAuth()->connect('commerce-xero', $organisation);
         } catch (Throwable $e) {
             Xero::error('Unable to authorize connect “{organisation}”: “{message}” {file}:{line}', [
                 'organisation' => $organisationId,
@@ -83,7 +83,7 @@ class AuthController extends Controller
 
         try {
             // Fetch the access token and create a Token for us to use
-            $token = Auth::$plugin->getOAuth()->callback('commerce-xero', $organisation);
+            $token = Auth::getInstance()->getOAuth()->callback('commerce-xero', $organisation);
 
             if (!$token) {
                 Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to fetch token.'), true);
@@ -93,7 +93,7 @@ class AuthController extends Controller
 
             // Save the token to the Auth plugin, with a reference to this plugin
             $token->reference = $organisation->id;
-            Auth::$plugin->getTokens()->upsertToken($token);
+            Auth::getInstance()->getTokens()->upsertToken($token);
         } catch (Throwable $e) {
             $error = Craft::t('commerce-xero', 'Unable to process callback for Xero: “{message}” {file}:{line}', [
                 'message' => $e->getMessage(),
@@ -126,7 +126,7 @@ class AuthController extends Controller
         $organisation->disconnect();
 
         // Delete all tokens for this client
-        Auth::$plugin->getTokens()->deleteTokenByOwnerReference('commerce-xero', $organisation->id);
+        Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('commerce-xero', $organisation->id);
 
         return $this->asModelSuccess($organisation, Craft::t('commerce-xero', 'Xero disconnected.'), 'organisation');
     }
