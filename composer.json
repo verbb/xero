@@ -1,51 +1,53 @@
 {
-  "name": "thejoshsmith/commerce-xero",
-  "description": "Send Commerce invoices to Xero including contacts, payments and even inventory updates.",
-  "type": "craft-plugin",
-  "version": "1.0.4.1",
-  "keywords": [
-    "craft",
-    "cms",
-    "craftcms",
-    "craft-plugin",
-    "xero",
-    "invoice"
-  ],
-  "license": "proprietary",
-  "authors": [
-    {
-      "name": "Josh Smith",
-      "homepage": "https://joshthe.dev/"
+    "name": "verbb/xero",
+    "description": "Send invoices to Xero including contacts, payments and even inventory updates.",
+    "type": "craft-plugin",
+    "version": "2.0.0",
+    "keywords": [
+        "craft",
+        "cms",
+        "craftcms",
+        "craft-plugin",
+        "xero"
+    ],
+    "support": {
+        "email": "support@verbb.io",
+        "issues": "https://github.com/verbb/xero/issues?state=open",
+        "source": "https://github.com/verbb/xero",
+        "docs": "https://github.com/verbb/xero",
+        "rss": "https://github.com/verbb/xero/commits/v2.atom"
     },
-    {
-      "name": "Myles Derham",
-      "homepage": "https://www.mylesderham.dev/"
-    }
-  ],
-  "require": {
-    "craftcms/cms": "^3.1.0",
-    "craftcms/commerce": "^2.0.0 || ^3.0.0",
-    "calcinai/xero-php": "^v2.2.4"
-  },
-  "autoload": {
-    "psr-4": {
-      "thejoshsmith\\commerce\\xero\\": "src/"
-    }
-  },
-  "support": {
-    "docs": "https://github.com/thejoshsmith/commerce-xero/blob/master/README.md",
-    "issues": "https://github.com/thejoshsmith/commerce-xero/issues"
-  },
-  "extra": {
-    "name": "Xero",
-    "handle": "commerce-xero",
-    "hasCpSettings": true,
-    "hasCpSection": true,
-    "changelogUrl": "https://raw.githubusercontent.com/thejoshsmith/commerce-xero/master/CHANGELOG.md",
-    "components": {
-      "XeroConnectionService": "thejoshsmith\\commerce\\xero\\services\\XeroConnectionService",
-      "XeroAPIService": "thejoshsmith\\commerce\\xero\\services\\XeroAPIService"
+    "license": "proprietary",
+    "authors": [
+        {
+            "name": "Verbb",
+            "homepage": "https://verbb.io"
+        },
+        {
+            "name": "Josh Smith",
+            "homepage": "https://joshthe.dev/"
+        },
+        {
+            "name": "Myles Derham",
+            "homepage": "https://www.mylesderham.dev/"
+        }
+    ],
+    "require": {
+        "php": "^8.0.2",
+        "craftcms/cms": "^4.0.0",
+        "craftcms/commerce": "^4.0.0",
+        "verbb/auth": "^1.0.0",
+        "verbb/base": "^2.0.0"
     },
-    "class": "thejoshsmith\\commerce\\xero\\Plugin"
-  }
+    "autoload": {
+        "psr-4": {
+            "verbb\\xero\\": "src/"
+        }
+    },
+    "extra": {
+        "name": "Xero",
+        "handle": "commerce-xero",
+        "changelogUrl": "https://raw.githubusercontent.com/verbb/xero/craft-4/CHANGELOG.md",
+        "class": "verbb\\xero\\Xero"
+    }
 }

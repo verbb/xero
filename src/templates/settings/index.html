@@ -1,0 +1,48 @@
+{% extends 'commerce-xero/_layouts/settings' %}
+
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set fullPageForm = true %}
+{% set selectedSubnavItem = 'settings' %}
+
+{% block blockContent %}
+
+<input type="hidden" name="action" value="plugins/save-plugin-settings">
+<input type="hidden" name="pluginHandle" value="commerce-xero">
+
+{% namespace 'settings' %}
+
+{{ forms.textField({
+    first: true,
+    readonly: true,
+    label: 'Redirect URI' | t('commerce-xero'),
+    instructions: 'Use this URI when setting up your Xero app.' | t('commerce-xero'),
+    value: settings.getRedirectUri(),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Client ID' | t('commerce-xero'),
+    instructions: 'Enter your Xero Client ID here.' | t('commerce-xero'),
+    name: 'clientId',
+    required: true,
+    suggestEnvVars: true,
+    value: settings.clientId ?? '',
+    warning: macros.configWarning('clientId', 'commerce-xero'),
+    errors: settings.getErrors('clientId'),
+}) }}
+
+{{ forms.autosuggestField({
+    label: 'Client Secret' | t('commerce-xero'),
+    instructions: 'Enter your Xero Client Secret here.' | t('commerce-xero'),
+    name: 'clientSecret',
+    required: true,
+    suggestEnvVars: true,
+    value: settings.clientSecret ?? '',
+    warning: macros.configWarning('clientSecret', 'commerce-xero'),
+    errors: settings.getErrors('clientSecret'),
+}) }}
+
+{% endnamespace %}
+
+{% endblock %}

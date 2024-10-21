@@ -1,0 +1,258 @@
+{% extends 'commerce-xero/_layouts' %}
+
+{% import '_includes/forms' as forms %}
+{% import 'verbb-base/_macros' as macros %}
+
+{% set crumbs = [
+    { label: craft.xero.getPluginName() | t('commerce-xero'), url: url('xero') },
+    { label: 'Organisations' | t('commerce-xero'), url: url('xero/organisations') }
+] %}
+
+{% set fullPageForm = true %}
+{% set selectedSubnavItem = 'organisations' %}
+
+{% set saveShortcutRedirect = 'xero/organisations/{id}' %}
+
+{% block actionButton %}
+
+<div class="btngroup">
+    <input type="submit" class="btn submit" value="{{ 'Save' | t('app') }}">
+
+    <div class="btn submit menubtn"></div>
+    <div class="menu">
+        <ul>
+            <li>
+                <a class="formsubmit" data-redirect="{{ saveShortcutRedirect | hash }}">
+                    {{ forms.optionShortcutLabel('S') }}
+                    {{ 'Save and continue editing' | t('app') }}
+                </a>
+            </li>
+        </ul>
+
+        {% if organisation.id %}
+            <hr>
+            <ul>
+                <li><a class="formsubmit error" data-action="commerce-xero/organisations/delete" data-confirm="{{ 'Are you sure you want to delete this organisation?' | t('commerce-xero') }}" data-redirect="{{ 'commerce-xero/organisations#' | hash }}">{{ 'Delete' | t('app') }}</a></li>
+            </ul>
+        {% endif %}
+    </div>
+</div>
+
+{% endblock %}
+
+{% block content %}
+
+{# Show an error when connecting to OAuth, instead of just in logs #}
+{% set message = craft.app.session.getFlash('xero:callback-error') %}
+
+{% if message %}
+    <div class="xero-pane xero-pane-error code error" style="margin-bottom: 24px;">{{ message }}</div>
+{% endif %}
+
+{% if not organisation.isConfigured() %}
+    <p class="warning with-icon">{{ 'Configure this plugin with {link} before you can link a Xero organisation.' | t('commerce-xero', { link: '<a href="https://developer.xero.com/documentation/getting-started/getting-started-guide">Xero</a>' }) | md(inlineOnly=true) }}</p>
+
+    {% if craft.app.user.isAdmin and craft.app.config.general.allowAdminChanges %}
+        <a href="{{ cpUrl('xero/settings') }}" class="btn submit">{{ 'Update Settings' | t('commerce-xero') }}</a>
+    {% else %}
+        <em>{{ 'Please ask your developer to action this.' | t('commerce-xero') }}</em>
+    {% endif %}
+{% elseif not organisation.isConnected() %}
+    <p class="warning with-icon">{{ 'Connect your Xero organisation to continue.' | t('commerce-xero') }}</p>
+    
+    {% if organisation.id %}<input type="hidden" name="organisationId" value="{{ organisation.id }}">{% endif %}
+    {{ actionInput('commerce-xero/organisations/save') }}
+    {{ redirectInput('xero/organisations') }}
+{% else %}
+
+    {% if not organisation.enabled %}
+        <p class="warning with-icon">{{ 'You need to enable this organisation before finanicials will sync to Xero.' | t('commerce-xero') }}</p>
+    {% endif %}
+
+    {% if organisation.id %}<input type="hidden" name="organisationId" value="{{ organisation.id }}">{% endif %}
+    {{ actionInput('commerce-xero/organisations/save') }}
+    {{ redirectInput('xero/organisations') }}
+
+    {{ forms.selectField({
+        label: 'Sales Revenue' | t('commerce-xero'),
+        instructions: 'Sales revenue maps to this account.' | t('commerce-xero'),
+        id: 'accountSales',
+        name: 'accountSales',
+        first: true,
+        required: true,
+        options: organisation.getAccountOptions(),
+        value: organisation.accountSales,
+        errors: organisation.getErrors('accountSales'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Accounts Receivable' | t('commerce-xero'),
+        instructions: 'Successfully paid orders are mapped to this account.' | t('commerce-xero'),
+        id: 'accountReceivable',
+        name: 'accountReceivable',
+        required: true,
+        options: organisation.getAccountOptions(),
+        value: organisation.accountReceivable,
+        errors: organisation.getErrors('accountReceivable'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Shipping & Delivery' | t('commerce-xero'),
+        instructions: 'Shipping costs map to this account.' | t('commerce-xero'),
+        id: 'accountShipping',
+        name: 'accountShipping',
+        required: true,
+        options: organisation.getAccountOptions(),
+        value: organisation.accountShipping,
+        errors: organisation.getErrors('accountShipping'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Rounding' | t('commerce-xero'),
+        instructions: 'Rounding adjustments map to this account.' | t('commerce-xero'),
+        id: 'accountRounding',
+        name: 'accountRounding',
+        required: true,
+        options: organisation.getAccountOptions(),
+        value: organisation.accountRounding,
+        errors: organisation.getErrors('accountRounding'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Discounts' | t('commerce-xero'),
+        instructions: 'Discount totals map to this account.' | t('commerce-xero'),
+        id: 'accountDiscounts',
+        name: 'accountDiscounts',
+        options: organisation.getAccountOptions(),
+        value: organisation.accountDiscounts,
+        errors: organisation.getErrors('accountDiscounts'),
+    }) }}
+
+    {{ forms.selectField({
+        label: 'Additional Fees' | t('commerce-xero'),
+        instructions: 'Additional Fees and Adjustments map to this account.' | t('commerce-xero'),
+        id: 'accountAdditionalFees',
+        name: 'accountAdditionalFees',
+        options: organisation.getAccountOptions(),
+        value: organisation.accountAdditionalFees,
+        errors: organisation.getErrors('accountAdditionalFees'),
+    }) }}
+
+{% endif %}
+
+{% endblock %}
+
+{% block details %}
+
+<div class="meta">
+    {{ forms.lightswitchField({
+        label: 'Enabled' | t('commerce-xero'),
+        name: 'enabled',
+        on: organisation.enabled,
+    }) }}
+
+    <div class="field lightswitch-field">
+        {% if organisation.isConfigured() %}
+            <div class="heading">
+                <span class="status on"></span>{{ 'Xero Configured' | t('commerce-xero') }}
+            </div>
+        {% else %}
+            <div class="heading">
+                <span class="status"></span><span class="light">{{ 'Xero not configured' | t('commerce-xero') }}</span>
+            </div>
+        {% endif %}
+    </div>
+
+    {% if organisation.isConnected() %}
+        <div class="field lightswitch-field">
+            <div class="heading">
+                <span class="status on"></span>{{ 'Connected' | t('commerce-xero') }}
+            </div>
+
+            <div class="input ltr">
+                <a class="btn small formsubmit" data-action="commerce-xero/auth/disconnect" data-param="organisation" data-value="{{ organisation.id }}" data-redirect="{{ saveShortcutRedirect | hash }}">{{ 'Disconnect' | t('commerce-xero') }}</a>
+            </div>
+        </div>
+    {% else %}
+        <div class="field lightswitch-field">
+            {% if not organisation.id %}
+                <div class="heading">
+                    <span class="warning with-icon">{{ 'Save this organisation to connect.' | t('commerce-xero') }}</span>
+                </div>
+            {% else %}
+                <div class="heading">
+                    <span class="status"></span><span class="light">{{ 'Not Connected' | t('commerce-xero') }}</span>
+                </div>
+
+                <div class="input ltr">
+                    <a class="btn small formsubmit" data-action="commerce-xero/auth/connect" data-param="organisation" data-value="{{ organisation.id }}" data-redirect="{{ 'xero/organisations/' ~ organisation.id | hash }}">{{ 'Connect' | t('commerce-xero') }}</a>
+                </div>
+            {% endif %}
+        </div>
+    {% endif %}
+</div>
+
+{% if organisation.id and organisation.isConnected() %}
+    <div class="meta">
+        {{ forms.lightswitchField({
+            label: 'Create Payments?' | t('commerce-xero'),
+            instructions: 'If enabled, orders marked as paid will have a Payment sent to Xero.' | t('commerce-xero'),
+            name: 'createPayments',
+            on: organisation.createPayments,
+            errors: organisation.getErrors('createPayments'),
+        }) }}
+
+        {{ forms.lightswitchField({
+            label: 'Update Xero inventory?' | t('commerce-xero'),
+            instructions: 'Using product SKUs as the Xero Item Code, inventory levels in Xero will be updated.<br><br><span class="warning with-icon">This operation will fail if the item code doesnt exist in Xero</span>' | t('commerce-xero'),
+            name: 'updateInventory',
+            on: organisation.updateInventory,
+            errors: organisation.getErrors('updateInventory'),
+        }) }}
+    </div>
+{% endif %}
+
+<hr>
+
+{% if organisation.id %}
+    <div class="meta read-only">
+        <div class="data">
+            <h5 class="heading">{{ 'ID' | t('commerce-xero') }}</h5>
+            <div class="value">{{ organisation.id }}</div>
+        </div>
+
+        {% set profile = organisation.getProfile() %}
+        {% set token = organisation.getToken() %}
+
+        {% if profile %}
+            <div class="data">
+                <h5 class="heading">{{ 'Name' | t('commerce-xero') }}</h5>
+                <div class="value">{{ profile.givenName }} {{ profile.familyName }}</div>
+            </div>
+
+            <div class="data">
+                <h5 class="heading">{{ 'Email' | t('commerce-xero') }}</h5>
+                <div class="value">{{ profile.email }}</div>
+            </div>
+        {% endif %}
+
+        {% if token %}
+            <div class="data">
+                <h5 class="heading">{{ 'Expires' | t('commerce-xero') }}</h5>
+                <div class="value">{{ token.expires | datetime('short') }}</div>
+            </div>
+        {% endif %}
+
+        <div class="data">
+            <h5 class="heading">{{ 'Date Created' | t('commerce-xero') }}</h5>
+            <div class="value">{{ organisation.dateCreated | datetime('short') }}</div>
+        </div>
+
+        <div class="data">
+            <h5 class="heading">{{ 'Date Updated' | t('commerce-xero') }}</h5>
+            <div class="value">{{ organisation.dateUpdated | datetime('short') }}</div>
+        </div>
+    </div>
+{% endif %}
+
+{% endblock %}

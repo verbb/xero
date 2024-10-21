@@ -1,145 +1,134 @@
 <?php
-/**
- * Auth Controller
- *
- * Handles routing of tenant requests
- *
- * PHP version 7.4
- *
- * @category  Controllers
- * @package   CraftCommerceXero
- * @author    Josh Smith <by@joshthe.dev>
- * @copyright 2021 Josh Smith
- * @license   Proprietary https://github.com/thejoshsmith/commerce-xero/blob/master/LICENSE.md
- * @version   GIT: $Id$
- * @link      https://joshthe.dev
- * @since     1.0.0
- */
+namespace verbb\xero\controllers;
 
-namespace thejoshsmith\commerce\xero\controllers;
-
-use thejoshsmith\commerce\xero\Plugin;
-use thejoshsmith\commerce\xero\controllers\BaseController;
-use thejoshsmith\commerce\xero\helpers\Xero as XeroHelper;
-use thejoshsmith\commerce\xero\events\OAuthEvent;
-
-use Calcinai\OAuth2\Client\Provider\Exception\XeroProviderException;
+use verbb\xero\Xero;
 
 use Craft;
-use craft\helpers\UrlHelper;
-use Throwable;
-use yii\web\HttpException;
+use craft\web\Controller;
+
 use yii\web\Response;
 
-/**
- * Auth Controller
- */
-class AuthController extends BaseController
+use verbb\auth\Auth;
+use verbb\auth\helpers\Session;
+
+use Throwable;
+
+class AuthController extends Controller
 {
-    const EVENT_BEFORE_SAVE_OAUTH = 'beforeSaveOAuth';
-    const EVENT_AFTER_SAVE_OAUTH = 'afterSaveOAuth';
+    // Properties
+    // =========================================================================
+
+    protected array|int|bool $allowAnonymous = ['connect', 'callback'];
+
 
     // Public Methods
     // =========================================================================
 
-    /**
-     * @throws HttpException
-     */
-    public function init()
+    public function beforeAction($action): bool
     {
-        parent::init();
-        \Yii::$app->response->format = \yii\web\Response::FORMAT_JSON;
+        // Don't require CSRF validation for callback requests
+        if ($action->id === 'callback') {
+            $this->enableCsrfValidation = false;
+        }
+
+        return parent::beforeAction($action);
     }
 
-    /**
-     * Index of tenants
-     *
-     * @return Response
-     * @throws Throwable
-     */
-    public function actionIndex(): Response
+    public function actionConnect(): ?Response
     {
-        $xeroOAuthService = Plugin::getInstance()->getXeroOAuth();
-        $params = $this->request->getQueryParams();
+        $organisationId = $this->request->getRequiredParam('organisation');
 
-        // User cancelled the flow...
-        if (isset($params['error']) && $params['error'] === 'access_denied') {
-            Craft::$app->getSession()->setNotice('Xero connection was cancelled');
-            return $this->redirect(UrlHelper::cpUrl('xero'));
+        try {
+            if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
+                return $this->asFailure(Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]));
+            }
+
+            // Keep track of which organisation instance is for, so we can fetch it in the callback
+            Session::set('organisationId', $organisationId);
+
+            return Auth::$plugin->getOAuth()->connect('commerce-xero', $organisation);
+        } catch (Throwable $e) {
+            Xero::error('Unable to authorize connect “{organisation}”: “{message}” {file}:{line}', [
+                'organisation' => $organisationId,
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
+
+            return $this->asFailure(Craft::t('commerce-xero', 'Unable to authorize connect “{organisation}”.', ['organisation' => $organisationId]));
+        }
+    }
+
+    public function actionCallback(): ?Response
+    {
+        // Restore the session data that we saved before authorization redirection from the cache back to session
+        Session::restoreSession($this->request->getParam('state'));
+
+        // Get both the origin (failure) and redirect (success) URLs
+        $origin = Session::get('origin');
+        $redirect = Session::get('redirect');
+
+        // Get the organisation we're current authorizing
+        if (!($organisationId = Session::get('organisationId'))) {
+            Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to find organisation.'), true);
+
+            return $this->redirect($origin);
         }
 
-        // Trigger the OAuth flow
-        if (!isset($params['code']) ) {
-            $authUrl = $xeroOAuthService->getAuthorizationUrl(
-                [
-                'scope' => $xeroOAuthService->getScopes()
-                ]
-            );
+        if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
+            Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]), true);
 
-            // Store a hashed version of the provider state in session
-            Craft::$app->session->set(
-                'oauth2state',
-                $xeroOAuthService->getState()
-            );
-
-            // Off we go to Xero...
-            header('Location: ' . $authUrl);
-            exit;
-        }
-
-        // Check given state against previously stored one to mitigate CSRF attack
-        if (empty($_GET['state'])
-            || ($_GET['state'] !== Craft::$app->session->get('oauth2state'))
-        ) {
-            Craft::$app->session->remove('oauth2state');
-            exit('Invalid state');
+            return $this->redirect($origin);
         }
 
         try {
-            // Try to get an access token (using the authorization code grant)
-            $token = $xeroOAuthService->getAccessToken(['code' => $params['code']]);
+            // Fetch the access token and create a Token for us to use
+            $token = Auth::$plugin->getOAuth()->callback('commerce-xero', $organisation);
 
-            // Decode information from the access token
-            $jwt = XeroHelper::decodeJwt($token->getToken());
+            if (!$token) {
+                Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to fetch token.'), true);
 
-            // If you added the openid/profile scopes you can access the authorizing user's identity.
-            $identity = $xeroOAuthService->getResourceOwner($token);
+                return $this->redirect($origin);
+            }
 
-            // Get the tenants that this user is authorized to access
-            // and filter them for this authentication event
-            $tenants = $xeroOAuthService->getTenants($token);
+            // Save the token to the Auth plugin, with a reference to this plugin
+            $token->reference = $organisation->id;
+            Auth::$plugin->getTokens()->upsertToken($token);
+        } catch (Throwable $e) {
+            $error = Craft::t('commerce-xero', 'Unable to process callback for Xero: “{message}” {file}:{line}', [
+                'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine(),
+            ]);
 
-            // Fire a 'beforeSaveOAuth' event
-            $event = new OAuthEvent(
-                [
-                'code' => $params['code'],
-                'jwt' => $jwt,
-                'token' => $token,
-                'resourceOwner' => $identity,
-                'tenants' => $tenants
-                ]
-            );
-            $this->trigger(self::EVENT_BEFORE_SAVE_OAUTH, $event);
+            Xero::error($error);
 
-            $identity = $event->resourceOwner;
-            $token = $event->token;
-            $tenants = $event->tenants;
+            // Show the error detail in the CP
+            Craft::$app->getSession()->setFlash('xero:callback-error', $error);
 
-            $xeroOAuthService->saveXeroConnection($identity, $token, $tenants);
-
-            // Fire a 'afterSaveOAuth' event
-            $this->trigger(self::EVENT_AFTER_SAVE_OAUTH, $event);
-
-            Craft::$app->getSession()->setNotice('Xero connection successfully saved');
-
-        } catch (XeroProviderException | Throwable $xpe) {
-            Craft::error(
-                $xpe->getMessage(),
-                __METHOD__
-            );
-            Craft::$app->getSession()->setError('Something went wrong connecting to Xero, please try again');
+            return $this->redirect($origin);
         }
 
-        return $this->redirect(UrlHelper::cpUrl('xero'));
+        Session::setNotice('commerce-xero', Craft::t('commerce-xero', 'Xero connected.'), true);
+
+        return $this->redirect($redirect);
     }
+
+    public function actionDisconnect(): ?Response
+    {
+        $organisationId = $this->request->getRequiredParam('organisation');
+
+        if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
+            return $this->asFailure(Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]));
+        }
+
+        // Disconnect in Xero first
+        $organisation->disconnect();
+
+        // Delete all tokens for this client
+        Auth::$plugin->getTokens()->deleteTokenByOwnerReference('commerce-xero', $organisation->id);
+
+        return $this->asModelSuccess($organisation, Craft::t('commerce-xero', 'Xero disconnected.'), 'organisation');
+    }
+
 }

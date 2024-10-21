@@ -1,0 +1,82 @@
+{% extends 'commerce-xero/_layouts' %}
+
+{% do view.registerAssetBundle('craft\\web\\assets\\admintable\\AdminTableAsset') -%}
+
+{% set crumbs = [
+    { label: craft.xero.getPluginName() | t('commerce-xero'), url: url('xero') },
+    { label: 'Organisations' | t('commerce-xero'), url: url('xero/organisations') },
+] %}
+
+{% set title = 'Organisations' | t('commerce-xero') %}
+{% set selectedSubnavItem = 'organisations' %}
+
+{% block actionButton %}
+
+{% if settings.isConfigured() %}
+    <a href="{{ url('xero/organisations/new') }}" class="btn submit add icon">
+        {{ 'New organisation' | t('commerce-xero') }}
+    </a>
+{% endif %}
+
+{% endblock %}
+
+{% block blockContent %}
+
+{% if not settings.isConfigured() %}
+    <h2>{{ 'Setup Required' | t('commerce-xero') }}</h2>
+
+    <p>{{ 'You need to configure this plugin with {link} before you can link a Xero organisation.' | t('commerce-xero', { link: '<a href="https://developer.xero.com/documentation/getting-started/getting-started-guide">Xero</a>'}) | md }}</p>
+
+    {% if craft.app.user.getIsAdmin() and craft.app.config.general.allowAdminChanges %}
+        <a href="{{ cpUrl('xero/settings') }}" class="btn submit">{{ 'Update Settings' | t('commerce-xero') }}</a>
+    {% else %}
+        <em>{{ 'Please ask your developer to action this.' | t('commerce-xero') }}.</em>
+    {% endif %}
+{% else %}
+    <div id="organisations-vue-admin-table"></div>
+{% endif %}
+
+{% endblock %}
+
+{% set tableData = [] %}
+
+{% for organisation in organisations %}
+    {% set tableData = tableData | merge([{
+        id: organisation.id,
+        title: organisation.name | t('site'),
+        url: organisation.getCpEditUrl(),
+        enabled: organisation.enabled,
+        connected: organisation.connected,
+    }]) %}
+{% endfor %}
+
+{% js %}
+    var columns = [
+        { name: '__slot:title', title: Craft.t('app', 'Name') },
+        { name: 'enabled', title: Craft.t('app', 'Status'), callback: function(value) {
+            if (value) {
+                return '<span class="status on"></span>' + Craft.t('commerce-xero', 'Enabled');
+            } else {
+                return '<span class="status"></span>' + Craft.t('commerce-xero', 'Disabled');
+            }
+        } },
+        { name: 'connected', title: Craft.t('app', 'Connected'), callback: function(value) {
+            if (value == '__none__') {
+                return '-';
+            } else if (value) {
+                return '<span class="status on"></span>' + Craft.t('commerce-xero', 'Connected');
+            } else {
+                return '<span class="status"></span>' + Craft.t('commerce-xero', 'Disconnected');
+            }
+        } },
+    ];
+
+    new Craft.VueAdminTable({
+        columns: columns,
+        container: '#organisations-vue-admin-table',
+        reorderAction: 'commerce-xero/organisations/reorder',
+        deleteAction: 'commerce-xero/organisations/delete',
+        emptyMessage: Craft.t('commerce-xero', 'No organisations exist yet.'),
+        tableData: {{ tableData | json_encode | raw }},
+    });
+{% endjs %}
