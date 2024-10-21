@@ -19,15 +19,12 @@ class Install extends Migration
         Auth::$plugin->migrator->up();
 
         $this->createTables();
-        $this->addForeignKeys();
 
         return true;
     }
 
     public function safeDown(): bool
     {
-        $this->dropProjectConfig();
-        $this->dropForeignKeys();
         $this->dropTables();
 
         // Delete all tokens for this plugin
