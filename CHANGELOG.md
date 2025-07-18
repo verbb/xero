@@ -14,6 +14,11 @@
 - Now requires Craft 5.0+.
 - Now requires Craft Commerce 5.0+.
 
+## 2.0.2 - 2025-07-18
+
+### Changed
+- Bump `verbb/auth`.
+
 ## 2.0.1 - 2024-12-31
 
 ### Fixed
@@ -23,6 +28,7 @@
 - Improve instruction text for new organisations.
 
 ## 2.0.0 - 2024-10-22
+
 > {note} The plugin’s package name has changed to `verbb/xero`. Xero will need be updated to 2.0 from a terminal, by running `composer require verbb/xero && composer remove thejoshsmith/commerce-xero`.
 
 ### Added
@@ -42,6 +48,7 @@
 - Fixed an issue with a migration that wasn't using Yii's table prefix syntax.
 
 ## 1.0.4 - 2021-03-09
+
 ### Fixed
 - Fixed an issue with a DB where clause that wasn't using Yii's table prefix syntax.
 
