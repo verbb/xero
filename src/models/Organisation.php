@@ -216,10 +216,10 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
             foreach ($accounts as $account) {
                 $this->_accounts[] = new Account([
                     'id' => $account['AccountID'],
-                    'code' => $account['Code'],
-                    'name' => $account['Name'],
-                    'status' => $account['Status'],
-                    'type' => $account['Type'],
+                    'code' => $account['Code'] ?? null,
+                    'name' => $account['Name'] ?? null,
+                    'status' => $account['Status'] ?? null,
+                    'type' => $account['Type'] ?? null,
                 ]);
             }
         } catch (Throwable $e) {
