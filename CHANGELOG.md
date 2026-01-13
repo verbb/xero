@@ -1,5 +1,10 @@
 # Changelog
 
+## 3.0.3 - 2026-01-13
+
+### Fixed
+- Fix an error when connecting to an organisation where some accounts have no “Code” assigned.
+
 ## 3.0.2 - 2025-07-18
 
 ### Changed
