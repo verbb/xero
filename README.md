@@ -1,4 +1,4 @@
-<p align="center"><img src="https://verbb.imgix.net/plugins/xero/xero-icon.svg" width="100" height="100" alt="Xero icon"></p>
+<p align="center"><img src="https://assets.verbb.io/plugins/xero/xero-icon.svg" width="100" height="100" alt="Xero icon"></p>
 <h1 align="center">Xero for Craft CMS</h1>
 
 Xero is a Craft CMS plugin for automatically sending Commerce invoices into Xero including contacts, payments and even inventory updates.
