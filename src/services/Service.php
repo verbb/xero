@@ -25,6 +25,10 @@ class Service extends Component
     {
         // Trigger for all enabled organisations
         foreach (Xero::$plugin->getOrganisations()->getAllEnabledOrganisations() as $organisation) {
+            Xero::info('Begin sending order #{id} to Xero.', [
+                'id' => $order->id,
+            ]);
+
             $contact = $this->findOrCreateContact($organisation, $order);
 
             if ($contact) {
@@ -37,10 +41,21 @@ class Service extends Component
                     
                     if ($account) {
                         $payment = $this->createPayment($organisation, $invoice, $account, $order);
+                    } else {
+                        Xero::info('Unable to find account for `accountReceivable` {account}.', [
+                            'account' => $organisation->accountReceivable
+                        ]);
                     }
                     
                     return true;
+                } else {
+                    Xero::info('Unable to find or create contact for order. Paid = `{isPaid}`. Create = `{create}`.', [
+                        'isPaid' => $order->isPaid,
+                        'create' => $organisation->createPayments,
+                    ]);
                 }
+            } else {
+                Xero::info('Unable to find or create contact for order.');
             }
         }
 
