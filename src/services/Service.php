@@ -65,7 +65,7 @@ class Service extends Component
     public function findOrCreateContact(Organisation $organisation, Order $order): array
     {
         try {
-            $user = $order->getUser();
+            $user = $order->getCustomer();
 
             $contactEmail = $user ? $user->email : $order->getEmail();
             $contactName = $user ? $user->getName() : $order->getEmail();
