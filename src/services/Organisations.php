@@ -119,6 +119,8 @@ class Organisations extends Component
         $organisationRecord->accountRounding = $organisation->accountRounding;
         $organisationRecord->accountDiscounts = $organisation->accountDiscounts;
         $organisationRecord->accountAdditionalFees = $organisation->accountAdditionalFees;
+        $organisationRecord->accountLineItemTax = $organisation->accountLineItemTax;
+        $organisationRecord->accountInvoiceStatus = $organisation->accountInvoiceStatus;
 
         if ($isNewOrganisation) {
             $maxSortOrder = (new Query())
@@ -235,6 +237,8 @@ class Organisations extends Component
                 'accountRounding',
                 'accountDiscounts',
                 'accountAdditionalFees',
+                'accountLineItemTax',
+                'accountInvoiceStatus',
                 'sortOrder',
                 'dateCreated',
                 'dateUpdated',
