@@ -23,43 +23,63 @@ class Service extends Component
 
     public function sendOrder(Order $order): bool
     {
+        Xero::info('Begin sending order #{id} to Xero.', [
+            'id' => $order->id,
+        ]);
+
         // Trigger for all enabled organisations
         foreach (Xero::$plugin->getOrganisations()->getAllEnabledOrganisations() as $organisation) {
-            Xero::info('Begin sending order #{id} to Xero.', [
-                'id' => $order->id,
+            Xero::info('Sending order to Xero Organisation `{org}`.', [
+                'org' => $organisation->getName(),
             ]);
 
             $contact = $this->findOrCreateContact($organisation, $order);
 
-            if ($contact) {
-                $invoice = $this->createInvoice($organisation, $contact, $order);
-                
-                // Only continue to payment if a payment has been made and payments are enabled
-                if ($invoice && $order->isPaid && $organisation->createPayments) {
-                    // Before we can make the payment we need to get the Account
-                    $account = $organisation->getAccountByCode($organisation->accountReceivable);
-                    
-                    if ($account) {
-                        $payment = $this->createPayment($organisation, $invoice, $account, $order);
-                    } else {
-                        Xero::info('Unable to find account for `accountReceivable` {account}.', [
-                            'account' => $organisation->accountReceivable
-                        ]);
-                    }
-                    
-                    return true;
-                } else {
-                    Xero::info('Unable to find or create contact for order. Paid = `{isPaid}`. Create = `{create}`.', [
-                        'isPaid' => $order->isPaid,
-                        'create' => $organisation->createPayments,
-                    ]);
-                }
-            } else {
+            if (!$contact) {
                 Xero::info('Unable to find or create contact for order.');
+
+                return false;
             }
+
+            $invoice = $this->createInvoice($organisation, $contact, $order);
+            
+            // Only continue to payment if a payment has been made and payments are enabled
+            if (!$invoice || !$order->isPaid || !$organisation->createPayments) {
+                Xero::info('Unable to find or create contact for order. Paid = `{isPaid}`. Create = `{create}`.', [
+                    'isPaid' => $order->isPaid,
+                    'create' => $organisation->createPayments,
+                ]);
+
+                return false;
+            }
+
+            // Before we can make the payment we need to get the Account
+            $account = $organisation->getAccountByCode($organisation->accountReceivable);
+            
+            if (!$account) {
+                Xero::info('Unable to find account for `accountReceivable` {account}.', [
+                    'account' => $organisation->accountReceivable
+                ]);
+
+                return false;
+            }
+
+            $payment = $this->createPayment($organisation, $invoice, $account, $order);
+
+            if (!$payment) {
+                Xero::info('Unable to make payment to Xero for order.');
+
+                return false;
+            }
+
+            Xero::info('Successfully sent order #{id} to Xero.', [
+                'id' => $order->id,
+            ]);
+            
+            return true;
         }
 
-        return false;
+        return true;
     }
 
     public function findOrCreateContact(Organisation $organisation, Order $order): array
