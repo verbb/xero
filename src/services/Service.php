@@ -179,13 +179,15 @@ class Service extends Component
                         'Quantity' => 1,
                         'UnitAmount' => $this->_format($adjustment->amount),
                     ];
-                } else if ($adjustment->type !== 'tax') {
-                    $invoice['LineItems'][] = [
-                        'AccountCode' => $organisation->accountAdditionalFees,
-                        'Description' => $adjustment->name,
-                        'Quantity' => 1,
-                        'UnitAmount' => $this->_format($adjustment->amount),
-                    ];
+                } else if ($adjustment->type == 'tax') {
+                    if (!str_contains(strtolower($adjustment->name), 'gst')) {
+                        $invoice['LineItems'][] = [
+                            'AccountCode' => $organisation->accountAdditionalFees,
+                            'Description' => $adjustment->name,
+                            'Quantity' => 1,
+                            'UnitAmount' => $this->_format($adjustment->amount),
+                        ];
+                    }
                 }
             }
 
