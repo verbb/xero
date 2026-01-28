@@ -13,9 +13,19 @@ class XeroAsset extends AssetBundle
 
     public function init(): void
     {
+        $this->sourcePath = "@verbb/xero/resources/dist";
+
         $this->depends = [
             VerbbCpAsset::class,
             CpAsset::class,
+        ];
+
+        $this->css = [
+            'css/xero.css',
+        ];
+
+        $this->js = [
+            'js/xero.js',
         ];
 
         parent::init();

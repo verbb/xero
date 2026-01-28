@@ -1,6 +1,7 @@
 <?php
 namespace verbb\xero;
 
+use verbb\xero\assetbundles\XeroAsset;
 use verbb\xero\base\PluginTrait;
 use verbb\xero\models\Settings;
 use verbb\xero\queue\jobs\SendToXero;
@@ -12,6 +13,7 @@ use craft\events\RegisterUrlRulesEvent;
 use craft\helpers\UrlHelper;
 use craft\web\twig\variables\CraftVariable;
 use craft\web\UrlManager;
+use craft\web\View;
 
 use yii\base\Event;
 
@@ -137,6 +139,29 @@ class Xero extends Plugin
             Craft::$app->getQueue()->delay(30)->push(new SendToXero([
                 'orderId' => $event->sender->id,
             ]));
+        });
+
+        Event::on(View::class, View::EVENT_END_BODY, function($event) {
+            $request = Craft::$app->getRequest();
+
+            // Check if on the order overview screen, or editing an order
+            if ($request->isCpRequest && str_contains($request->fullPath, '/commerce/orders')) {
+                $event->sender->registerAssetBundle(XeroAsset::class);
+
+                $routeParams = Craft::$app->getUrlManager()->getRouteParams();
+                $orderId = $routeParams['orderId'] ?? '';
+
+                if ($orderId) {
+                    $order = Order::find()->id($orderId)->one();
+
+                    // Only show for completed and paid orders
+                    if ($order->isCompleted && $order->isPaid) {
+                        $event->sender->registerJs("(function() {
+                            new Craft.Xero.CpSendOrderToXero('" . $order->id . "');
+                        })();");
+                    }
+                }
+            }
         });
     }
 }
