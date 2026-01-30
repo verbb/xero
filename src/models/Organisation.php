@@ -49,7 +49,7 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
     public ?string $accountRounding = null;
     public ?string $accountDiscounts = null;
     public ?string $accountAdditionalFees = null;
-    public ?string $accountLineItemTax = 'Exclusive';
+    public ?string $accountLineItemTax = 'Inclusive';
     public ?string $accountInvoiceStatus = 'AUTHORISED';
     public ?int $sortOrder = null;
     public ?string $uid = null;
