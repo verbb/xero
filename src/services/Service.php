@@ -145,6 +145,12 @@ class Service extends Component
                     'Quantity' => $orderItem->qty,
                 ];
 
+                // If we include tax in our product cost, tell Xero to use `BAS Excluded` tax rate.
+                // Otherwise, automatic tax is calculated in Xero.
+                if ($organisation->accountLineItemTax === 'Inclusive') {
+                    $lineItem['TaxType'] = 'NONE';
+                }
+
                 if ($orderItem->discount > 0) {
                     $discountPercentage = (($orderItem->discount / $orderItem->subtotal) * -100);
 
@@ -171,6 +177,7 @@ class Service extends Component
                         'Description' => $adjustment->name,
                         'Quantity' => 1,
                         'UnitAmount' => $this->_format($order->getTotalShippingCost()),
+                        'TaxType' => 'NONE',
                     ];
                 } else if ($adjustment->type == 'discount') {
                     $invoice['LineItems'][] = [
@@ -178,6 +185,15 @@ class Service extends Component
                         'Description' => $adjustment->name,
                         'Quantity' => 1,
                         'UnitAmount' => $this->_format($adjustment->amount),
+                        'TaxType' => 'NONE',
+                    ];
+                } else if ($adjustment->type == 'tax') {
+                    $invoice['LineItems'][] = [
+                        'AccountCode' => $organisation->accountAdditionalFees,
+                        'Description' => $adjustment->name,
+                        'Quantity' => 1,
+                        'UnitAmount' => $this->_format($adjustment->amount),
+                        'TaxType' => 'NONE',
                     ];
                 }
             }
