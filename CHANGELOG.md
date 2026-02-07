@@ -1,5 +1,24 @@
 # Changelog
 
+## 3.0.4 - 2026-02-07
+
+### Added
+- Add `commerce-xero/orders/send` console command.
+- Add debug logs for sending orders to Xero.
+- Add “Send to Xero” button when editing an order in the control panel.
+
+### Changed
+- Update line item tax default value to be “Inclusive”.
+
+### Fixed
+- Fix line item discounts and tax not being calculated correctly.
+- Fix a redirect error when connecting to a organisation in the control panel.
+- Fix an error when creating a new organisation.
+- Fix handling of tax items for orders.
+- Fix “Line Item Tax” and “Invoices Status” not saving correctly for organisation settings.
+- Fix non-GST tax not going through to Xero.
+- Fix `Order::getUser()` Commerce deprecation.
+
 ## 3.0.3 - 2026-01-13
 
 ### Fixed
