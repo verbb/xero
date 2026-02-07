@@ -118,7 +118,7 @@ class AuthController extends Controller
 
         Session::setNotice('commerce-xero', Craft::t('commerce-xero', 'Xero connected.'), true);
 
-        return $this->redirect($redirect);
+        return $this->redirect($this->getView()->renderObjectTemplate($redirect, $organisation));
     }
 
     public function actionDisconnect(): ?Response
