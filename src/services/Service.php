@@ -151,16 +151,18 @@ class Service extends Component
                     $lineItem['TaxType'] = 'NONE';
                 }
 
-                if ($orderItem->discount > 0) {
-                    $discountPercentage = (($orderItem->discount / $orderItem->subtotal) * -100);
-
-                    $lineItem['DiscountRate'] = $this->_format($discountPercentage);
-                }
-
                 if ($orderItem->salePrice > 0) {
                     $lineItem['UnitAmount'] = $this->_format($orderItem->salePrice);
                 } else {
                     $lineItem['UnitAmount'] = $this->_format($orderItem->price);
+                }
+
+                if ($tax = $orderItem->getTax()) {
+                    $lineItem['TaxAmount'] = $this->_format($tax);
+                }
+
+                if ($discount = $orderItem->getDiscount()) {
+                    $lineItem['DiscountAmount'] = $this->_format($discount * -1);
                 }
 
                 if ($organisation->updateInventory) {
