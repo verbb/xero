@@ -2,6 +2,7 @@
 namespace verbb\xero\services;
 
 use verbb\xero\Xero;
+use verbb\xero\events\OrderEvent;
 use verbb\xero\models\Account;
 use verbb\xero\models\Organisation;
 
@@ -18,6 +19,13 @@ use Throwable;
 
 class Service extends Component
 {
+    // Constants
+    // =========================================================================
+
+    public const EVENT_BEFORE_SEND_ORDER = 'beforeSendOrder';
+    public const EVENT_AFTER_SEND_ORDER = 'afterSendOrder';
+
+
     // Public Methods
     // =========================================================================
 
@@ -75,11 +83,18 @@ class Service extends Component
             Xero::info('Successfully sent order #{id} to Xero.', [
                 'id' => $order->id,
             ]);
-            
-            return true;
+
+            $success = true;
         }
 
-        return true;
+        // Fire an 'afterSendOrder' event
+        if ($success && $this->hasEventHandlers(self::EVENT_AFTER_SEND_ORDER)) {
+            $this->trigger(self::EVENT_AFTER_SEND_ORDER, new OrderEvent([
+                'order' => $order,
+            ]));
+        }
+
+        return $success;
     }
 
     public function findOrCreateContact(Organisation $organisation, Order $order): array
