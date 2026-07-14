@@ -9,12 +9,14 @@ The below shows the defaults already used by Xero, so you don't need to add thes
 return [
     '*' => [
         'pluginName' => 'Xero',
+        'excludedGateways' => [],
     ]
 ];
 ```
 
 ## Configuration options
 - `pluginName` - If you wish to customise the plugin name.
+- `excludedGateways` - An array of Commerce payment gateway handles. Orders paid with these gateways will not be synced to Xero.
 
 
 ## Control Panel

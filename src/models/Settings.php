@@ -6,6 +6,8 @@ use craft\base\Model;
 use craft\helpers\ArrayHelper;
 use craft\helpers\UrlHelper;
 
+use craft\commerce\Plugin as Commerce;
+
 class Settings extends Model
 {
     // Properties
@@ -14,7 +16,8 @@ class Settings extends Model
     public string $pluginName = 'Xero';
     public ?string $clientId = null;
     public ?string $clientSecret = null;
-   
+    public array $excludedGateways = [];
+
 
     // Public Methods
     // =========================================================================
@@ -32,6 +35,20 @@ class Settings extends Model
         }
 
         parent::__construct($config);
+    }
+
+    public function getExcludedGatewayOptions(): array
+    {
+        $options = [];
+
+        foreach (Commerce::getInstance()->getGateways()->getAllGateways() as $gateway) {
+            $options[] = [
+                'label' => $gateway->name,
+                'value' => $gateway->handle,
+            ];
+        }
+
+        return $options;
     }
 
     public function getRedirectUri(): ?string

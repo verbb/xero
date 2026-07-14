@@ -29,11 +29,51 @@ class Service extends Component
     // Public Methods
     // =========================================================================
 
+    public function isOrderExcluded(Order $order): bool
+    {
+        $excludedGateways = Xero::$plugin->getSettings()->excludedGateways;
+
+        if (!$excludedGateways) {
+            return false;
+        }
+
+        $gateway = $order->getGateway();
+
+        return $gateway && in_array($gateway->handle, $excludedGateways, true);
+    }
+
     public function sendOrder(Order $order): bool
     {
+        if ($this->isOrderExcluded($order)) {
+            $gateway = $order->getGateway();
+
+            Xero::info('Skipping order #{id} — gateway `{gateway}` is excluded.', [
+                'id' => $order->id,
+                'gateway' => $gateway->handle ?? '',
+            ]);
+
+            return false;
+        }
+
+        // Fire a 'beforeSendOrder' event
+        $event = new OrderEvent([
+            'order' => $order,
+        ]);
+        $this->trigger(self::EVENT_BEFORE_SEND_ORDER, $event);
+
+        if (!$event->isValid) {
+            Xero::info('Skipping order #{id} — cancelled by beforeSendOrder event.', [
+                'id' => $order->id,
+            ]);
+
+            return false;
+        }
+
         Xero::info('Begin sending order #{id} to Xero.', [
             'id' => $order->id,
         ]);
+
+        $success = false;
 
         // Trigger for all enabled organisations
         foreach (Xero::$plugin->getOrganisations()->getAllEnabledOrganisations() as $organisation) {

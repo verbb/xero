@@ -43,6 +43,16 @@
     errors: settings.getErrors('clientSecret'),
 }) }}
 
+{{ forms.checkboxSelectField({
+    label: 'Excluded Gateways' | t('commerce-xero'),
+    instructions: 'Orders paid with these gateways will not be synced to Xero.' | t('commerce-xero'),
+    name: 'excludedGateways',
+    options: settings.getExcludedGatewayOptions(),
+    values: settings.excludedGateways,
+    warning: macros.configWarning('excludedGateways', 'commerce-xero'),
+    errors: settings.getErrors('excludedGateways'),
+}) }}
+
 {% endnamespace %}
 
 {% endblock %}

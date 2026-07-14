@@ -136,8 +136,16 @@ class Xero extends Plugin
     {
         // Send completed and paid orders off to Xero (30 second delay)
         Event::on(Order::class, Order::EVENT_AFTER_ORDER_PAID, function(Event $event) {
+            /** @var Order $order */
+            $order = $event->sender;
+
+            // Skip queuing orders from excluded payment gateways
+            if (self::$plugin->getService()->isOrderExcluded($order)) {
+                return;
+            }
+
             Craft::$app->getQueue()->delay(30)->push(new SendToXero([
-                'orderId' => $event->sender->id,
+                'orderId' => $order->id,
             ]));
         });
 
@@ -154,8 +162,8 @@ class Xero extends Plugin
                 if ($orderId) {
                     $order = Order::find()->id($orderId)->one();
 
-                    // Only show for completed and paid orders
-                    if ($order->isCompleted && $order->isPaid) {
+                    // Only show for completed and paid orders that aren't from an excluded gateway
+                    if ($order->isCompleted && $order->isPaid && !self::$plugin->getService()->isOrderExcluded($order)) {
                         $event->sender->registerJs("(function() {
                             new Craft.Xero.CpSendOrderToXero('" . $order->id . "');
                         })();");
