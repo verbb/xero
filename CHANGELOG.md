@@ -1,5 +1,11 @@
 # Changelog
 
+## 3.0.6 - 2026-07-15
+
+### Added
+- Add “Excluded Gateways” setting to prevent orders from selected payment gateways being synced to Xero.
+- Add `beforeSendOrder` and `afterSendOrder` events.
+
 ## 3.0.5 - 2026-05-03
 
 ### Changed
