@@ -4,17 +4,13 @@
 {% import 'verbb-base/_macros' as macros %}
 
 {% set fullPageForm = true %}
-{% set selectedSubnavItem = 'settings' %}
+{% set selectedTab = 'general' %}
+{% set pageTitle = 'General Settings' | t('commerce-xero') %}
+{% set pageAction = 'plugins/save-plugin-settings' %}
+{% set pageUrl = 'xero/settings' %}
 
-{% block blockContent %}
-
-<input type="hidden" name="action" value="plugins/save-plugin-settings">
-<input type="hidden" name="pluginHandle" value="commerce-xero">
-
-{% namespace 'settings' %}
-
+{% block settingsContent %}
 {{ forms.textField({
-    first: true,
     readonly: true,
     label: 'Redirect URI' | t('commerce-xero'),
     instructions: 'Use this URI when setting up your Xero app.' | t('commerce-xero'),
@@ -52,7 +48,4 @@
     warning: macros.configWarning('excludedGateways', 'commerce-xero'),
     errors: settings.getErrors('excludedGateways'),
 }) }}
-
-{% endnamespace %}
-
 {% endblock %}

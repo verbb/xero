@@ -1,4 +1,4 @@
-{% extends 'commerce-xero/_layouts' %}
+{% extends 'verbb-base/_layouts/settings' %}
 
 {% import '_includes/forms' as forms %}
 {% import 'verbb-base/_macros' as macros %}
@@ -6,8 +6,20 @@
 {% requireAdmin %}
 
 {% set crumbs = [
-    { label: craft.xero.getPluginName() | t('commerce-xero'), url: url('xero') },
-    { label: 'Settings' | t('app'), url: url('xero/settings') },
-] %}
+    { label: 'Settings' | t('app'), url: url('settings') },
+    { label: 'Plugins' | t('app'), url: url('settings/plugins') },
+    { label: craft.xero.getPluginName() | t('commerce-xero'), url: url('xero/settings') },
+] | merge(crumbs ?? []) %}
 
-{% set title = 'Settings' | t('commerce-xero') %}
+{% set pageTabs = {
+    general: { title: 'General Settings' | t('commerce-xero'), url: url('xero/settings') },
+} %}
+
+{% set pageTitle = pageTitle ?? false %}
+{% if title is not defined and pageTitle %}
+    {% set title = pageTitle %}
+{% endif %}
+
+{% block settingsMeta %}
+    {{ hiddenInput('pluginHandle', 'commerce-xero') }}
+{% endblock %}

@@ -71,4 +71,17 @@ class Settings extends Model
     {
         return $this->clientId && $this->clientSecret;
     }
+
+    protected function defineRules(): array
+    {
+        $rules = parent::defineRules();
+        $rules[] = [['pluginName'], 'trim'];
+        $rules[] = [['pluginName'], 'required'];
+        $rules[] = [['pluginName'], 'string', 'max' => 52];
+        $rules[] = [['clientId', 'clientSecret'], 'required'];
+
+        return $rules;
+    }
+
 }
+
