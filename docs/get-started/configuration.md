@@ -1,22 +1,37 @@
 # Configuration
-Create a `commerce-xero.php` file under your `/config` directory with the following options available to you. You can also use multi-environment options to change these per environment.
 
-The below shows the defaults already used by Xero, so you don't need to add these options unless you want to modify the values.
+You can customise Xero’s settings using a PHP configuration file. This is optional: each setting has a default, so you only need to include the values you want to change.
+
+To override a setting, create `commerce-xero.php` in your Craft project’s `/config` directory and return an array of setting names and values. For example, the following will change the name displayed in the control panel:
 
 ```php
 <?php
 
 return [
-    '*' => [
-        'pluginName' => 'Xero',
-        'excludedGateways' => [],
-    ]
+    'pluginName' => 'Xero Tools',
 ];
 ```
 
-## Configuration options
-- `pluginName` - If you wish to customise the plugin name.
-- `excludedGateways` - An array of Commerce payment gateway handles. Orders paid with these gateways will not be synced to Xero.
+All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults.
+
+## Configuration Options
+
+::: reference
+### `pluginName`
+
+**Type:** `string` · **Default:** `'Xero'`
+
+The name displayed for the plugin in the control panel.
+:::
+
+::: reference
+### `excludedGateways`
+
+**Type:** `array` · **Default:** `[]`
+
+An array of Commerce payment gateway handles. Orders paid with these gateways will not be synced to Xero.
+:::
+
 
 
 ## Control Panel

@@ -3,7 +3,7 @@ Xero provides a collection of events for extending its functionality. Modules an
 
 ## Order Events
 
-### The `beforeSendOrder` event
+### The `beforeSendOrder` Event
 The event that is triggered before an order is sent to Xero. Event handlers can prevent the order from being sent by setting `$event->isValid` to `false`.
 
 ```php
@@ -20,7 +20,7 @@ Event::on(Service::class, Service::EVENT_BEFORE_SEND_ORDER, function(OrderEvent 
 });
 ```
 
-### The `afterSendOrder` event
+### The `afterSendOrder` Event
 The event that is triggered after an order has been successfully sent to Xero.
 
 ```php
@@ -37,7 +37,7 @@ Event::on(Service::class, Service::EVENT_AFTER_SEND_ORDER, function(OrderEvent $
 
 ## Organisation Events
 
-### The `beforeSaveOrganisation` event
+### The `beforeSaveOrganisation` Event
 The event that is triggered before a organisation is saved.
 
 ```php
@@ -53,7 +53,7 @@ Event::on(Organisations::class, Organisations::EVENT_BEFORE_SAVE_ORGANISATION, f
 });
 ```
 
-### The `afterSaveOrganisation` event
+### The `afterSaveOrganisation` Event
 The event that is triggered after a organisation is saved.
 
 ```php
@@ -69,7 +69,7 @@ Event::on(Organisations::class, Organisations::EVENT_AFTER_SAVE_ORGANISATION, fu
 });
 ```
 
-### The `beforeDeleteOrganisation` event
+### The `beforeDeleteOrganisation` Event
 The event that is triggered before a organisation is deleted.
 
 ```php
@@ -84,7 +84,7 @@ Event::on(Organisations::class, Organisations::EVENT_BEFORE_DELETE_ORGANISATION,
 });
 ```
 
-### The `afterDeleteOrganisation` event
+### The `afterDeleteOrganisation` Event
 The event that is triggered after a organisation is deleted.
 
 ```php
