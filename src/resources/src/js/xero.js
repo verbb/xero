@@ -20,7 +20,7 @@ Craft.Xero.CpSendOrderToXero = Garnish.Base.extend({
         // Find the settings menubtn, and add a new option to it
         var $menubtn = $('.menubtn[data-icon="settings"]').data('menubtn');
 
-        if ($menubtn) {
+        if ($menubtn && !$menubtn.menu.$container.find('[data-action="send-to-xero"]').length) {
             var $newOption = $('<li><a data-action="send-to-xero">' + Craft.t('commerce-xero', 'Send to Xero') + '</a></li>');
 
             // Add the option to the menubtn

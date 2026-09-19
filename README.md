@@ -3,11 +3,13 @@
 
 Xero is a Craft CMS plugin for automatically sending Commerce invoices into Xero including contacts, payments and even inventory updates.
 
+Connect multiple Xero organisations, exclude orders from nominated payment gateways, and send an order automatically, from its control-panel screen or through the console.
+
 ## Documentation
 Visit the [Xero Plugin page](https://verbb.io/craft-plugins/xero) for all documentation, guides, pricing and developer resources.
 
 ## Credit & Thanks
-Originally created by [Josh Smith](https://joshthe.dev).
+Originally created by Josh Smith.
 
 ## Support
 Get in touch with us via the [Xero Support page](https://verbb.io/craft-plugins/xero/support) or by [creating a Github issue](https://github.com/verbb/xero/issues)
