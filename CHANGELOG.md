@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.0.9 - 2026-09-20
 
 ### Fixed
 - Prevent duplicate “Send to Xero” actions in the Craft Commerce order menu.
