@@ -4,6 +4,7 @@ namespace verbb\xero\controllers;
 use verbb\xero\Xero;
 
 use Craft;
+use craft\elements\User;
 use craft\web\Controller;
 
 use yii\web\Response;
@@ -18,7 +19,7 @@ class AuthController extends Controller
     // Properties
     // =========================================================================
 
-    protected array|int|bool $allowAnonymous = ['connect', 'callback'];
+    protected array|int|bool $allowAnonymous = ['callback'];
 
 
     // Public Methods
@@ -36,6 +37,9 @@ class AuthController extends Controller
 
     public function actionConnect(): ?Response
     {
+        $this->requirePermission('accessPlugin-commerce-xero');
+        $this->requirePostRequest();
+
         $organisationId = $this->request->getRequiredParam('organisation');
 
         try {
@@ -74,7 +78,7 @@ class AuthController extends Controller
             return $response;
         }
 
-        $oauth->claimCallback('commerce-xero');
+        $oauth->claimAuthorizedCallback('commerce-xero', fn(User $user): bool => $user->can('accessPlugin-commerce-xero'));
 
         // Get both the origin (failure) and redirect (success) URLs
         $origin = Session::get('origin');
@@ -128,6 +132,9 @@ class AuthController extends Controller
 
     public function actionDisconnect(): ?Response
     {
+        $this->requirePermission('accessPlugin-commerce-xero');
+        $this->requirePostRequest();
+
         $organisationId = $this->request->getRequiredParam('organisation');
 
         if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
