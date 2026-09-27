@@ -43,17 +43,17 @@ class AuthController extends Controller
                 return $this->asFailure(Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]));
             }
 
-            // Handle redirection correctly for CP-based requests, as we need to session-store it.
+            $context = [
+                'organisationId' => $organisationId,
+            ];
+
             if ($this->request->getIsCpRequest()) {
                 if ($redirect = $this->request->getValidatedBodyParam('redirect')) {
-                    Session::set('redirect', $this->getView()->renderObjectTemplate($redirect, $organisation));
+                    $context['redirect'] = $this->getView()->renderObjectTemplate($redirect, $organisation);
                 }
             }
 
-            // Keep track of which organisation instance is for, so we can fetch it in the callback
-            Session::set('organisationId', $organisationId);
-
-            return Auth::getInstance()->getOAuth()->connect('commerce-xero', $organisation);
+            return Auth::getInstance()->getOAuth()->connect('commerce-xero', $organisation, $organisation->id, $context);
         } catch (Throwable $e) {
             Xero::error('Unable to authorize connect “{organisation}”: “{message}” {file}:{line}', [
                 'organisation' => $organisationId,
@@ -68,8 +68,13 @@ class AuthController extends Controller
 
     public function actionCallback(): ?Response
     {
-        // Restore the session data that we saved before authorization redirection from the cache back to session
-        Session::restoreSession($this->request->getParam('state'));
+        $oauth = Auth::getInstance()->getOAuth();
+
+        if ($response = $oauth->prepareCallback('commerce-xero')) {
+            return $response;
+        }
+
+        $oauth->claimCallback('commerce-xero');
 
         // Get both the origin (failure) and redirect (success) URLs
         $origin = Session::get('origin');
@@ -90,7 +95,7 @@ class AuthController extends Controller
 
         try {
             // Fetch the access token and create a Token for us to use
-            $token = Auth::getInstance()->getOAuth()->callback('commerce-xero', $organisation);
+            $token = $oauth->callback('commerce-xero', $organisation, $organisation->id);
 
             if (!$token) {
                 Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to fetch token.'), true);

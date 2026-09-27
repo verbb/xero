@@ -5,6 +5,9 @@
 ### Changed
 - Route plugin settings through the plugin’s authorized settings controller.
 
+### Fixed
+- Fixed OAuth callback transaction validation.
+
 ## 3.0.9 - 2026-09-20
 
 ### Fixed
