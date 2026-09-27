@@ -37,7 +37,7 @@
         "craftcms/cms": "^5.0.0",
         "craftcms/commerce": "^5.0.0",
         "verbb/auth": "^2.0.35",
-        "verbb/base": "^3.0.0"
+        "verbb/base": "^3.0.18"
     },
     "autoload": {
         "psr-4": {
