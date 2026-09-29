@@ -4,13 +4,12 @@ Map an eligible Craft Commerce order to a Xero invoice with its customer, line i
 
 ## Features
 
-- **Invoices:** Create Xero invoices from eligible Craft Commerce orders.
-- **Multiple organisations:** Connect and select from more than one Xero organisation.
-- **Gateway exclusions:** Prevent orders from nominated payment gateways being sent to Xero.
-- **Manual and console sending:** Send an order from its control-panel screen or through the command line.
-- **Contacts:** Match or create customer records from order details.
-- **Payments:** Send relevant Commerce payment information to the invoice.
-- **Inventory items:** Coordinate product item details and available inventory workflows.
-- **Account mapping:** Connect store taxes and totals to the correct Xero accounts.
-- **Developer events:** Adjust payloads and synchronisation for project-specific accounting rules.
-- **Accounting mappings:** Connect the appropriate Xero organisation and map accounts, tax rates, statuses, and inventory behaviour to the store. Plugin events provide extension points when a project needs to adjust contacts, invoices, payments, or item data.
+- Create Xero invoices from eligible Craft Commerce orders.
+- Connect and select from more than one Xero organisation.
+- Prevent orders from nominated payment gateways being sent to Xero.
+- Send an order from its control-panel screen or through the command line.
+- Match or create customer records from order details.
+- Send relevant Commerce payment information to the invoice.
+- Coordinate product item details and available inventory workflows.
+- Connect store taxes and totals to the correct Xero accounts.
+- Adjust payloads and synchronisation for project-specific accounting rules.
