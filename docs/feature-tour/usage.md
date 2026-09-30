@@ -16,6 +16,8 @@ Once an organisation is connected the plugin allows you to map your Chart of Acc
 - Shipping/Delivery
 - Rounding
 
+![Mapping Commerce totals to Xero accounts](../../screenshots/account-mappings.png)
+
 By default, all fully paid orders will be pushed into the Craft Queue with a delay of 30 seconds, after which the invoice will be sent to Xero.
 
 You can exclude orders paid with specific payment gateways via **Settings → Excluded Gateways**, or by setting `excludedGateways` in your [config file](../get-started/configuration.md). For more custom filtering, use the [`beforeSendOrder`](../developers/events.md#the-beforesendorder-event) event.
