@@ -90,7 +90,7 @@ class Service extends Component
             }
 
             $invoice = $this->createInvoice($organisation, $contact, $order);
-            
+
             // Only continue to payment if a payment has been made and payments are enabled
             if (!$invoice || !$order->isPaid || !$organisation->createPayments) {
                 Xero::info('Unable to find or create contact for order. Paid = `{isPaid}`. Create = `{create}`.', [
@@ -103,7 +103,7 @@ class Service extends Component
 
             // Before we can make the payment we need to get the Account
             $account = $organisation->getAccountByCode($organisation->accountReceivable);
-            
+
             if (!$account) {
                 Xero::info('Unable to find account for `accountReceivable` {account}.', [
                     'account' => $organisation->accountReceivable
@@ -236,7 +236,7 @@ class Service extends Component
                         'UnitAmount' => $this->_format($order->getTotalShippingCost()),
                         'TaxType' => 'NONE',
                     ];
-                } else if ($adjustment->type == 'discount') {
+                } elseif ($adjustment->type == 'discount') {
                     $invoice['LineItems'][] = [
                         'AccountCode' => $organisation->accountDiscounts,
                         'Description' => $adjustment->name,
@@ -244,7 +244,7 @@ class Service extends Component
                         'UnitAmount' => $this->_format($adjustment->amount),
                         'TaxType' => 'NONE',
                     ];
-                } else if ($adjustment->type == 'tax') {
+                } elseif ($adjustment->type == 'tax') {
                     $invoice['LineItems'][] = [
                         'AccountCode' => $organisation->accountAdditionalFees,
                         'Description' => $adjustment->name,
@@ -294,7 +294,7 @@ class Service extends Component
         return [];
     }
 
-    
+
     // Public Methods
     // =========================================================================
 

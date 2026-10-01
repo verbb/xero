@@ -28,7 +28,7 @@ class Settings extends Model
         if ($oldClientId = ArrayHelper::remove($config, 'xeroClientId')) {
             $config['clientId'] = $oldClientId;
         }
-        
+
         // Handle legacy settings
         if ($oldClientSecret = ArrayHelper::remove($config, 'xeroClientSecret')) {
             $config['clientSecret'] = $oldClientSecret;
@@ -84,4 +84,3 @@ class Settings extends Model
     }
 
 }
-

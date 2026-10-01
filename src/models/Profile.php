@@ -16,7 +16,7 @@ class Profile extends Model
     public ?string $preferredUsername = null;
     public ?string $email = null;
     public ?string $givenName = null;
-    public ?string $familyName = null;   
+    public ?string $familyName = null;
 
 
     // Public Methods

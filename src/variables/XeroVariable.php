@@ -17,5 +17,5 @@ class XeroVariable
     {
         return Xero::$plugin->getPluginName();
     }
-    
+
 }

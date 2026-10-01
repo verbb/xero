@@ -39,7 +39,7 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
 
     // Properties
     // =========================================================================
-    
+
     public ?bool $enabled = null;
     public ?bool $createPayments = null;
     public ?bool $updateInventory = null;
@@ -250,7 +250,7 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
 
         foreach ($this->getAccounts() as $account) {
             $label = "$account->name - $account->code - $account->type";
-            
+
             $options[] = ['label' => $label, 'value' => $account->code];
         }
 

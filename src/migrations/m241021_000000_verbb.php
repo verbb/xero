@@ -73,7 +73,7 @@ class m241021_000000_verbb extends Migration
                     ->insert('{{%auth_oauth_tokens}}', $token)
                     ->execute();
             }
-        }   
+        }
 
         return true;
     }

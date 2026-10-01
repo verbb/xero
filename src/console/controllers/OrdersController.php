@@ -23,7 +23,7 @@ class OrdersController extends Controller
     // =========================================================================
 
     /**
-     * @var int 
+     * @var int
      */
     public ?int $orderId = null;
 

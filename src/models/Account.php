@@ -13,6 +13,6 @@ class Account extends Model
     public ?string $code = null;
     public ?string $name = null;
     public ?string $status = null;
-    public ?string $type = null;   
+    public ?string $type = null;
 
 }

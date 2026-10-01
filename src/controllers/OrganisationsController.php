@@ -69,7 +69,7 @@ class OrganisationsController extends Controller
 
         if ($organisationId) {
             $oldOrganisation = $organisationsService->getOrganisationById($organisationId);
-            
+
             if (!$oldOrganisation) {
                 throw new BadRequestHttpException("Invalid organisation ID: $organisationId");
             }
@@ -130,7 +130,7 @@ class OrganisationsController extends Controller
         $setting = $this->request->getRequiredBodyParam('setting');
 
         $organisation = $organisationsService->getOrganisationByHandle($organisationHandle);
-        
+
         if (!$organisation) {
             throw new BadRequestHttpException("Invalid organisation: $organisationHandle");
         }
