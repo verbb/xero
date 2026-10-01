@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed a medium-severity authorization bypass vulnerability.
+
 ## 3.0.10 - 2026-09-30
 
 ### Changed

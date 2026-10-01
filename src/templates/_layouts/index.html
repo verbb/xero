@@ -1,5 +1,7 @@
 {% extends parentLayout ?? '_layouts/cp' %}
 
+{% requirePermission 'accessPlugin-commerce-xero' %}
+
 {% do view.registerAssetBundle('verbb\\xero\\assetbundles\\XeroAsset') %}
 
 {% if title is not defined %}
