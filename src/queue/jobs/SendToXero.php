@@ -6,8 +6,6 @@ use verbb\xero\Xero;
 use Craft;
 use craft\queue\BaseJob;
 
-use craft\commerce\Plugin as Commerce;
-
 class SendToXero extends BaseJob
 {
     // Properties
@@ -28,7 +26,7 @@ class SendToXero extends BaseJob
     {
         $this->setProgress($queue, 0);
 
-        $order = Commerce::getInstance()->getOrders()->getOrderById($this->orderId);
+        $order = Xero::$plugin->getService()->getEligibleOrderById($this->orderId);
 
         if ($order) {
             Xero::$plugin->getService()->sendOrder($order);

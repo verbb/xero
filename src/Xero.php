@@ -139,8 +139,7 @@ class Xero extends Plugin
             /** @var Order $order */
             $order = $event->sender;
 
-            // Skip queuing orders from excluded payment gateways
-            if (self::$plugin->getService()->isOrderExcluded($order)) {
+            if (!self::$plugin->getService()->isOrderEligible($order)) {
                 return;
             }
 
@@ -151,9 +150,14 @@ class Xero extends Plugin
 
         Event::on(View::class, View::EVENT_END_BODY, function($event) {
             $request = Craft::$app->getRequest();
+            $user = Craft::$app->getUser();
 
             // Check if on the order overview screen, or editing an order
-            if ($request->isCpRequest && str_contains($request->fullPath, '/commerce/orders')) {
+            if ($request->isCpRequest &&
+                $user->checkPermission('accessPlugin-commerce-xero') &&
+                $user->checkPermission('commerce-manageOrders') &&
+                str_contains($request->fullPath, '/commerce/orders')
+            ) {
                 $event->sender->registerAssetBundle(XeroAsset::class);
 
                 $routeParams = Craft::$app->getUrlManager()->getRouteParams();
@@ -162,8 +166,7 @@ class Xero extends Plugin
                 if ($orderId) {
                     $order = Order::find()->id($orderId)->one();
 
-                    // Only show for completed and paid orders that aren't from an excluded gateway
-                    if ($order->isCompleted && $order->isPaid && !self::$plugin->getService()->isOrderExcluded($order)) {
+                    if ($order && self::$plugin->getService()->isOrderEligible($order)) {
                         $event->sender->registerJs("(function() {
                             new Craft.Xero.CpSendOrderToXero('" . $order->id . "');
                         })();");

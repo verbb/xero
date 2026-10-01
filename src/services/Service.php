@@ -42,14 +42,30 @@ class Service extends Component
         return $gateway && in_array($gateway->handle, $excludedGateways, true);
     }
 
+    public function isOrderEligible(Order $order): bool
+    {
+        return (bool)$order->id &&
+            $order->enabled &&
+            $order->isCompleted &&
+            $order->isPaid &&
+            !$this->isOrderExcluded($order);
+    }
+
+    public function getEligibleOrderById(int $orderId): ?Order
+    {
+        $order = Order::find()->id($orderId)->one();
+
+        return $order && $this->isOrderEligible($order) ? $order : null;
+    }
+
     public function sendOrder(Order $order): bool
     {
-        if ($this->isOrderExcluded($order)) {
-            $gateway = $order->getGateway();
+        $orderId = (int)$order->id;
+        $order = $orderId ? $this->getEligibleOrderById($orderId) : null;
 
-            Xero::info('Skipping order #{id} — gateway `{gateway}` is excluded.', [
-                'id' => $order->id,
-                'gateway' => $gateway->handle ?? '',
+        if (!$order) {
+            Xero::info('Skipping order #{id} — the order is not eligible to be sent to Xero.', [
+                'id' => $orderId,
             ]);
 
             return false;

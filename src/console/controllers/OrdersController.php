@@ -3,16 +3,10 @@ namespace verbb\xero\console\controllers;
 
 use verbb\xero\Xero;
 
-use Craft;
 use craft\console\Controller;
-use craft\db\Query;
 use craft\helpers\Console;
-use craft\helpers\Db;
 
 use yii\console\ExitCode;
-use yii\web\Response;
-
-use craft\commerce\Plugin as Commerce;
 
 /**
  * Manages Commerce Orders for Xero.
@@ -55,15 +49,19 @@ class OrdersController extends Controller
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        $order = Commerce::getInstance()->getOrders()->getOrderById($this->orderId);
+        $order = Xero::$plugin->getService()->getEligibleOrderById($this->orderId);
 
         if (!$order) {
-            $this->stderr('Unable to find order for ID #' . $this->orderId . '.' . PHP_EOL, Console::FG_RED);
+            $this->stderr('Unable to find an eligible order for ID #' . $this->orderId . '.' . PHP_EOL, Console::FG_RED);
 
             return ExitCode::UNSPECIFIED_ERROR;
         }
 
-        Xero::$plugin->getService()->sendOrder($order);
+        if (!Xero::$plugin->getService()->sendOrder($order)) {
+            $this->stderr('Unable to send order #' . $this->orderId . ' to Xero.' . PHP_EOL, Console::FG_RED);
+
+            return ExitCode::UNSPECIFIED_ERROR;
+        }
 
         return ExitCode::OK;
     }
