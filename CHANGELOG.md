@@ -1,10 +1,9 @@
 # Changelog
 
-## Unreleased
+## 3.0.11 - 2026-10-02
 
 ### Changed
 - Updated the required version of `verbb/base` to 3.0.19.
-- Replaced the CodeKit JavaScript build with Vite and moved web assets to `src/web`.
 
 ### Fixed
 - Fixed medium-severity authorization bypass vulnerabilities.
