@@ -2,7 +2,7 @@
 
 {% requirePermission 'accessPlugin-commerce-xero' %}
 
-{% do view.registerAssetBundle('verbb\\xero\\assetbundles\\XeroAsset') %}
+{% do view.registerAssetBundle('verbb\\xero\\web\\assets\\cp\\XeroAsset') %}
 
 {% if title is not defined %}
     {% set title = 'Xero' | t('commerce-xero') %}

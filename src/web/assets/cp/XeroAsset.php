@@ -1,10 +1,10 @@
 <?php
-namespace verbb\xero\assetbundles;
+namespace verbb\xero\web\assets\cp;
 
 use craft\web\AssetBundle;
 use craft\web\assets\cp\CpAsset;
 
-use verbb\base\assetbundles\CpAsset as VerbbCpAsset;
+use verbb\base\web\assets\cp\CpAsset as VerbbCpAsset;
 
 class XeroAsset extends AssetBundle
 {
@@ -13,19 +13,15 @@ class XeroAsset extends AssetBundle
 
     public function init(): void
     {
-        $this->sourcePath = "@verbb/xero/resources/dist";
+        $this->sourcePath = '@verbb/xero/web/assets/cp/dist';
 
         $this->depends = [
             VerbbCpAsset::class,
             CpAsset::class,
         ];
 
-        $this->css = [
-            'css/xero.css',
-        ];
-
         $this->js = [
-            'js/xero.js',
+            'xero.js',
         ];
 
         parent::init();

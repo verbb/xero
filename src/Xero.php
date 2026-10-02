@@ -1,11 +1,11 @@
 <?php
 namespace verbb\xero;
 
-use verbb\xero\assetbundles\XeroAsset;
 use verbb\xero\base\PluginTrait;
 use verbb\xero\models\Settings;
 use verbb\xero\queue\jobs\SendToXero;
 use verbb\xero\variables\XeroVariable;
+use verbb\xero\web\assets\cp\XeroAsset;
 
 use Craft;
 use craft\base\Plugin;

@@ -1,0 +1,10 @@
+{
+    "name": "xero",
+    "private": true,
+    "scripts": {
+        "build": "vite build"
+    },
+    "devDependencies": {
+        "vite": "^8.2.0"
+    }
+}
