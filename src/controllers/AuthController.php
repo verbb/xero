@@ -148,18 +148,42 @@ class AuthController extends Controller
         $this->requirePostRequest();
 
         $organisationId = $this->request->getRequiredParam('organisation');
+        $organisationsService = Xero::$plugin->getOrganisations();
+        $mutex = Craft::$app->getMutex();
+        $lockName = $organisationsService->getConnectionLockName((int)$organisationId);
 
-        if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
-            return $this->asFailure(Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]));
+        if (!$mutex->acquire($lockName, Organisations::CONNECTION_LOCK_TIMEOUT)) {
+            return $this->asFailure(Craft::t('commerce-xero', 'Unable to disconnect organisation “{organisation}”. Please try again.', ['organisation' => $organisationId]));
         }
 
-        // Disconnect in Xero first
-        $organisation->disconnect();
+        try {
+            if (!($organisation = $organisationsService->getOrganisationById($organisationId))) {
+                return $this->asFailure(Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]));
+            }
 
-        // Delete all tokens for this client
-        Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('commerce-xero', $organisation->id);
+            // Keep the local credentials until Xero confirms the connection is revoked.
+            if (!$organisation->revokeConnection()) {
+                $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t disconnect this organisation from Xero. Please try again.'));
+                return $this->asModelFailure($organisation, Craft::t('commerce-xero', 'Couldn’t disconnect from Xero.'), 'organisation');
+            }
 
-        return $this->asModelSuccess($organisation, Craft::t('commerce-xero', 'Xero disconnected.'), 'organisation');
+            $transaction = Craft::$app->getDb()->beginTransaction();
+
+            try {
+                Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('commerce-xero', (string)$organisation->id);
+                $transaction->commit();
+            } catch (Throwable $e) {
+                if ($transaction->getIsActive()) {
+                    $transaction->rollBack();
+                }
+
+                throw $e;
+            }
+
+            return $this->asModelSuccess($organisation, Craft::t('commerce-xero', 'Xero disconnected.'), 'organisation');
+        } finally {
+            $mutex->release($lockName);
+        }
     }
 
 }

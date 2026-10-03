@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed a medium-severity incomplete cleanup vulnerability.
+- Fixed a medium-severity improper exception handling vulnerability.
 
 ## 3.0.11 - 2026-10-02
 
