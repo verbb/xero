@@ -2,6 +2,7 @@
 namespace verbb\xero\controllers;
 
 use verbb\xero\Xero;
+use verbb\xero\services\Organisations;
 
 use Craft;
 use craft\elements\User;
@@ -91,13 +92,22 @@ class AuthController extends Controller
             return $this->redirect($origin);
         }
 
-        if (!($organisation = Xero::$plugin->getOrganisations()->getOrganisationById($organisationId))) {
-            Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]), true);
+        $organisationsService = Xero::$plugin->getOrganisations();
+        $mutex = Craft::$app->getMutex();
+        $lockName = $organisationsService->getConnectionLockName((int)$organisationId);
 
+        if (!$mutex->acquire($lockName, Organisations::CONNECTION_LOCK_TIMEOUT)) {
+            Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to connect organisation “{organisation}”. Please try again.', ['organisation' => $organisationId]), true);
             return $this->redirect($origin);
         }
 
         try {
+            if (!($organisation = $organisationsService->getOrganisationById($organisationId))) {
+                Session::setError('commerce-xero', Craft::t('commerce-xero', 'Unable to find organisation “{organisation}”.', ['organisation' => $organisationId]), true);
+
+                return $this->redirect($origin);
+            }
+
             // Fetch the access token and create a Token for us to use
             $token = $oauth->callback('commerce-xero', $organisation, $organisation->id);
 
@@ -123,6 +133,8 @@ class AuthController extends Controller
             Craft::$app->getSession()->setFlash('xero:callback-error', $error);
 
             return $this->redirect($origin);
+        } finally {
+            $mutex->release($lockName);
         }
 
         Session::setNotice('commerce-xero', Craft::t('commerce-xero', 'Xero connected.'), true);

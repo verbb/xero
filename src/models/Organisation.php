@@ -9,9 +9,11 @@ use craft\base\SavableComponentInterface;
 use craft\helpers\App;
 use craft\helpers\UrlHelper;
 
+use RuntimeException;
 use Throwable;
 
 use GuzzleHttp\Exception\RequestException;
+use League\OAuth2\Client\Provider\Exception\IdentityProviderException;
 
 use verbb\auth\Auth;
 use verbb\auth\base\OAuthProviderInterface;
@@ -105,7 +107,7 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
     public function getToken(): ?Token
     {
         if ($this->id) {
-            return Auth::getInstance()->getTokens()->getTokenByOwnerReference('commerce-xero', $this->id);
+            return Auth::getInstance()->getTokens()->getTokenByOwnerReference('commerce-xero', (string)$this->id);
         }
 
         return null;
@@ -120,27 +122,39 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
 
     public function disconnect(): void
     {
-        try {
-            $token = $this->getToken()?->getToken() ?? null;
-
-            if ($token && $tenant = $this->getTenant()) {
-                $this->getOAuthProvider()->disconnect($token, $tenant->id);
-            }
-        } catch (Throwable $e) {
-            $messageText = $e->getMessage();
-
-            // Check for Guzzle errors, which are truncated in the exception `getMessage()`.
-            if ($e instanceof RequestException && $e->getResponse()) {
-                $messageText = (string)$e->getResponse()->getBody()->getContents();
-            }
-
-            Xero::error(Craft::t('commerce-xero', 'API error: “{message}” {file}:{line}', [
-                'message' => $messageText,
-                'file' => $e->getFile(),
-                'line' => $e->getLine(),
-            ]));
-        }
+        $this->revokeConnection();
     }
+
+    public function revokeConnection(): bool
+    {
+        if (!$this->id) {
+            return true;
+        }
+
+        $tokens = Auth::getInstance()->getTokens()->getAllTokensByOwnerReference('commerce-xero', (string)$this->id);
+        $connectionTokens = [];
+
+        foreach ($tokens as $token) {
+            $tenant = new Tenant($token->getToken()?->getValues()['tenant'] ?? []);
+
+            if (!$tenant->id) {
+                $this->_logApiError(new RuntimeException('Unable to disconnect Xero without a stored connection ID.'));
+                return false;
+            }
+
+            // Auth tolerates duplicate rows, so retain one credential for every distinct Xero connection.
+            $connectionTokens[$tenant->id] ??= $token;
+        }
+
+        foreach ($connectionTokens as $connectionId => $token) {
+            if (!$this->_revokeConnection($token, $connectionId)) {
+                return false;
+            }
+        }
+
+        return true;
+    }
+
 
     public function getTenant(): ?Tenant
     {
@@ -300,5 +314,56 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
                 'accounting.contacts',
             ],
         ];
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private function _revokeConnection(Token $token, string $connectionId): bool
+    {
+        try {
+            $oauthProvider = $this->getOAuthProvider();
+            $oauthProvider->setHttpClient($this->getClient());
+
+            // Use Auth's request path so expired access tokens are refreshed before revocation.
+            $oauthProvider->getApiRequest('DELETE', 'connections/' . $connectionId, $token, $this->getRequestOptions($token));
+
+            return true;
+        } catch (Throwable $e) {
+            // A previous successful revocation can leave local cleanup to be retried.
+            if ($this->_isMissingConnectionError($e)) {
+                return true;
+            }
+
+            $this->_logApiError($e);
+
+            return false;
+        }
+    }
+
+    private function _isMissingConnectionError(Throwable $e): bool
+    {
+        if ($e instanceof IdentityProviderException) {
+            return (int)$e->getCode() === 404;
+        }
+
+        return $e instanceof RequestException && $e->getResponse()?->getStatusCode() === 404;
+    }
+
+    private function _logApiError(Throwable $e): void
+    {
+        $messageText = $e->getMessage();
+
+        // Check for Guzzle errors, which are truncated in the exception `getMessage()`.
+        if ($e instanceof RequestException && $e->getResponse()) {
+            $messageText = (string)$e->getResponse()->getBody()->getContents();
+        }
+
+        Xero::error(Craft::t('commerce-xero', 'API error: “{message}” {file}:{line}', [
+            'message' => $messageText,
+            'file' => $e->getFile(),
+            'line' => $e->getLine(),
+        ]));
     }
 }

@@ -16,6 +16,8 @@ use yii\base\Component;
 use Exception;
 use Throwable;
 
+use verbb\auth\Auth;
+
 class Organisations extends Component
 {
     // Constants
@@ -25,6 +27,7 @@ class Organisations extends Component
     public const EVENT_AFTER_SAVE_ORGANISATION = 'afterSaveOrganisation';
     public const EVENT_BEFORE_DELETE_ORGANISATION = 'beforeDeleteOrganisation';
     public const EVENT_AFTER_DELETE_ORGANISATION = 'afterDeleteOrganisation';
+    public const CONNECTION_LOCK_TIMEOUT = 10;
 
 
     // Properties
@@ -183,6 +186,37 @@ class Organisations extends Component
 
     public function deleteOrganisation(Organisation $organisation): bool
     {
+        if (!$organisation->id) {
+            $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
+            return false;
+        }
+
+        $mutex = Craft::$app->getMutex();
+        $lockName = $this->getConnectionLockName($organisation->id);
+
+        if (!$mutex->acquire($lockName, self::CONNECTION_LOCK_TIMEOUT)) {
+            $organisation->addError('id', Craft::t('commerce-xero', 'This organisation is already being updated. Please try again.'));
+            return false;
+        }
+
+        try {
+            return $this->_deleteOrganisation($organisation);
+        } finally {
+            $mutex->release($lockName);
+        }
+    }
+
+    public function getConnectionLockName(int $organisationId): string
+    {
+        return sprintf('commerce-xero:connection:%d', $organisationId);
+    }
+
+
+    // Private Methods
+    // =========================================================================
+
+    private function _deleteOrganisation(Organisation $organisation): bool
+    {
         // Fire a 'beforeDeleteOrganisation' event
         if ($this->hasEventHandlers(self::EVENT_BEFORE_DELETE_ORGANISATION)) {
             $this->trigger(self::EVENT_BEFORE_DELETE_ORGANISATION, new OrganisationEvent([
@@ -190,9 +224,35 @@ class Organisations extends Component
             ]));
         }
 
-        Craft::$app->getDb()->createCommand()
-            ->delete('{{%xero_organisations}}', ['id' => $organisation->id])
-            ->execute();
+        // Keep retry credentials and the local organisation until Xero confirms revocation.
+        if (!$organisation->revokeConnection()) {
+            $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t disconnect this organisation from Xero. Please try again.'));
+            return false;
+        }
+
+        $transaction = Craft::$app->getDb()->beginTransaction();
+
+        try {
+            Auth::getInstance()->getTokens()->deleteTokenByOwnerReference('commerce-xero', (string)$organisation->id);
+
+            $deleted = Craft::$app->getDb()->createCommand()
+                ->delete('{{%xero_organisations}}', ['id' => $organisation->id])
+                ->execute();
+
+            if (!$deleted) {
+                $transaction->rollBack();
+                $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
+                return false;
+            }
+
+            $transaction->commit();
+        } catch (Throwable $e) {
+            if ($transaction->getIsActive()) {
+                $transaction->rollBack();
+            }
+
+            throw $e;
+        }
 
         // Fire an 'afterDeleteOrganisation' event
         if ($this->hasEventHandlers(self::EVENT_AFTER_DELETE_ORGANISATION)) {
@@ -206,10 +266,6 @@ class Organisations extends Component
 
         return true;
     }
-
-
-    // Private Methods
-    // =========================================================================
 
     private function _organisations(): MemoizableArray
     {

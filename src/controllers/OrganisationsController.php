@@ -127,7 +127,9 @@ class OrganisationsController extends Controller
 
         $organisationId = $this->request->getRequiredBodyParam('id');
 
-        Xero::$plugin->getOrganisations()->deleteOrganisationById($organisationId);
+        if (!Xero::$plugin->getOrganisations()->deleteOrganisationById($organisationId)) {
+            return $this->asFailure(Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
+        }
 
         return $this->asSuccess();
     }
