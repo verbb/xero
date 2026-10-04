@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.0.12 - 2026-10-05
 
 ### Fixed
 - Fixed a medium-severity incomplete cleanup vulnerability.
