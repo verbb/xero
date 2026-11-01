@@ -120,18 +120,18 @@ class OrganisationsController extends Controller
         return $this->asSuccess();
     }
 
-    public function actionDelete(): Response
+    public function actionDelete(): ?Response
     {
         $this->requirePostRequest();
-        $this->requireAcceptsJson();
 
-        $organisationId = $this->request->getRequiredBodyParam('id');
+        // The index table posts `id` as JSON, and the edit page submits its form's `organisationId`.
+        $organisationId = $this->request->getBodyParam('id') ?? $this->request->getRequiredBodyParam('organisationId');
 
         if (!Xero::$plugin->getOrganisations()->deleteOrganisationById($organisationId)) {
             return $this->asFailure(Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
         }
 
-        return $this->asSuccess();
+        return $this->asSuccess(Craft::t('commerce-xero', 'Organisation deleted.'));
     }
 
     public function actionRefreshSettings(): Response
