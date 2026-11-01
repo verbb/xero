@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed orders only being sent to the first Xero organisation, and being reported as failed, when “Create Payments” is disabled.
+- Fixed PHP errors while creating a Xero contact, invoice or payment throwing a type error instead of being logged.
 
 ## 3.0.14 - 2026-10-22
 

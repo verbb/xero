@@ -14,7 +14,6 @@ use craft\commerce\elements\Order;
 use GuzzleHttp\Exception\RequestException;
 
 use DateTime;
-use Exception;
 use Throwable;
 
 class Service extends Component
@@ -328,7 +327,7 @@ class Service extends Component
         return number_format($number, $precision, '.', '');
     }
 
-    private function _handleException(Exception $e): void
+    private function _handleException(Throwable $e): void
     {
         $messageText = $e->getMessage();
 
