@@ -107,14 +107,23 @@ class Service extends Component
 
             $invoice = $this->createInvoice($organisation, $contact, $order);
 
+            if (!$invoice) {
+                Xero::info('Unable to create invoice for order.');
+
+                return false;
+            }
+
             // Only continue to payment if a payment has been made and payments are enabled
-            if (!$invoice || !$order->isPaid || !$organisation->createPayments) {
-                Xero::info('Unable to find or create contact for order. Paid = `{isPaid}`. Create = `{create}`.', [
+            if (!$order->isPaid || !$organisation->createPayments) {
+                Xero::info('Skipping payment for order #{id}. Paid = `{isPaid}`. Create = `{create}`.', [
+                    'id' => $order->id,
                     'isPaid' => $order->isPaid,
                     'create' => $organisation->createPayments,
                 ]);
 
-                return false;
+                $success = true;
+
+                continue;
             }
 
             // Before we can make the payment we need to get the Account

@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+### Fixed
+- Fixed orders only being sent to the first Xero organisation, and being reported as failed, when “Create Payments” is disabled.
+
 ## 3.0.14 - 2026-10-22
 
 ### Changed
