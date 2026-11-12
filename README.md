@@ -13,18 +13,21 @@ Map an eligible Craft Commerce order to a Xero invoice with its customer, line i
 - Send an order from its control-panel screen or through the command line.
 - Match or create customer records from order details.
 - Send relevant Commerce payment information to the invoice.
-- Coordinate product item details and available inventory workflows.
+- Update Xero inventory levels using product SKUs as Xero item codes.
 - Connect store taxes and totals to the correct Xero accounts.
 - Adjust payloads and synchronisation for project-specific accounting rules.
 
 ## Documentation
+
 Visit the [Xero Plugin page](https://verbb.io/craft-plugins/xero) for all documentation, guides, pricing and developer resources.
 
 ## Credit & Thanks
+
 Originally created by Josh Smith.
 
 ## Support
-Get in touch with us via the [Xero Support page](https://verbb.io/craft-plugins/xero/support) or by [creating a Github issue](https://github.com/verbb/xero/issues)
+
+Get in touch with us via the [Xero Support page](https://verbb.io/craft-plugins/xero/support) or by [creating a GitHub issue](https://github.com/verbb/xero/issues).
 
 <h2></h2>
 
