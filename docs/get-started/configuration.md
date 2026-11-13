@@ -12,7 +12,7 @@ return [
 ];
 ```
 
-All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults.
+All other settings keep their defaults. Add any further settings you want to change to the same array. The options below explain the available settings and their defaults. You can also manage many of these settings in the control panel under **Xero → Settings**.
 
 ## Configuration Options
 
@@ -31,8 +31,3 @@ The name displayed for the plugin in the control panel.
 
 An array of Commerce payment gateway handles. Orders paid with these gateways will not be synced to Xero.
 :::
-
-
-
-## Control Panel
-You can also manage configuration settings through the Control Panel by visiting Settings → Xero.
