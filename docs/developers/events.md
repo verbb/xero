@@ -1,5 +1,6 @@
 # Events
-Xero provides a collection of events for extending its functionality. Modules and plugins can register event listeners, typically in their `init()` methods, to modify Xero’s behavior.
+
+Xero provides events for extending its functionality. Modules and plugins can register event listeners, typically in their `init()` methods, to change Xero’s behaviour.
 
 ## Order Events
 
