@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 3.1.0 - 2026-11-24
 
 ### Added
 - Added a setup checklist to the Organisations page for new installs, which walks through the Xero app credentials, adding and connecting an organisation and mapping its accounts, and gives way to the organisations list once the first organisation is added.
