@@ -12,9 +12,12 @@ use craft\db\Query;
 use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Json;
+use craft\helpers\Sequence;
 
 use yii\base\Component;
 
+use DateTime;
+use DateTimeZone;
 use Exception;
 use Throwable;
 
@@ -30,6 +33,10 @@ class Organisations extends Component
     public const EVENT_BEFORE_DELETE_ORGANISATION = 'beforeDeleteOrganisation';
     public const EVENT_AFTER_DELETE_ORGANISATION = 'afterDeleteOrganisation';
     public const CONNECTION_LOCK_TIMEOUT = 10;
+    public const ORGANISATIONS_CREATED_SEQUENCE = 'commerce-xero:organisationsCreated';
+
+    // The date the landing page's setup checklist was added. Installs made before it never see the checklist.
+    public const SETUP_CHECKLIST_SINCE = '2026-11-23';
 
 
     // Properties
@@ -65,44 +72,28 @@ class Organisations extends Component
     }
 
     /**
-     * The landing page's setup steps, or null once the first order has been sent to Xero.
+     * The landing page's setup steps, or null once it should be the organisations list.
      *
-     * Each step points at the first organisation that has reached it, so the checklist can link straight to the
-     * organisation to carry on with.
+     * Only installs made since the checklist was added see it, so sites that update the plugin keep their list. It
+     * leaves at the first organisation, counting deleted ones, since organisations aren't kept in a trash.
      */
     public function getSetupSteps(): ?array
     {
-        // Sites that sent orders before this counter existed are seeded by `m261123_000000_seed_orders_sent`.
-        if (Xero::$plugin->getService()->getOrdersSentCount() > 0) {
+        $installDate = Craft::$app->getPlugins()->getStoredPluginInfo('commerce-xero')['installDate'] ?? null;
+
+        if (!$installDate || $installDate < new DateTime(self::SETUP_CHECKLIST_SINCE, new DateTimeZone('UTC'))) {
+            return null;
+        }
+
+        if ($this->getAllOrganisations() || (int)Sequence::current(self::ORGANISATIONS_CREATED_SEQUENCE) > 0) {
             return null;
         }
 
         $settings = Xero::$plugin->getSettings();
-        $organisations = $this->getAllOrganisations();
-
-        $connected = null;
-        $ready = null;
-
-        foreach ($organisations as $organisation) {
-            if (!$organisation->isConnected()) {
-                continue;
-            }
-
-            $connected ??= $organisation;
-
-            if ($organisation->enabled && $organisation->hasRequiredAccounts()) {
-                $ready = $organisation;
-
-                break;
-            }
-        }
 
         return [
             // Resolve environment variables, as connecting does, so an unset variable doesn't count.
             'credentials' => App::parseEnv($settings->clientId) && App::parseEnv($settings->clientSecret),
-            'organisation' => $organisations[0] ?? null,
-            'connected' => $connected,
-            'ready' => $ready,
         ];
     }
 
@@ -182,6 +173,10 @@ class Organisations extends Component
 
         if (!$organisation->id) {
             $organisation->id = $organisationRecord->id;
+        }
+
+        if ($isNewOrganisation) {
+            $this->_recordOrganisationCreated();
         }
 
         $organisation->afterSave($isNewOrganisation);
@@ -314,6 +309,18 @@ class Organisations extends Component
         $this->_organisations = null;
 
         return true;
+    }
+
+    private function _recordOrganisationCreated(): void
+    {
+        try {
+            Sequence::next(self::ORGANISATIONS_CREATED_SEQUENCE);
+        } catch (Throwable $e) {
+            // The organisation is saved, so a busy lock shouldn't fail the save.
+            Xero::error('Unable to record a new organisation: “{message}”.', [
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     private function _organisations(): MemoizableArray

@@ -99,14 +99,6 @@ class Organisation extends SavableComponent implements OAuthProviderInterface, S
         return (bool)$this->getToken();
     }
 
-    /**
-     * Whether the accounts that every invoice needs are mapped, matching the fields `defineRules()` requires.
-     */
-    public function hasRequiredAccounts(): bool
-    {
-        return $this->accountSales && $this->accountReceivable && $this->accountShipping && $this->accountRounding;
-    }
-
     public function getCpEditUrl(): string
     {
         return UrlHelper::cpUrl("xero/organisations/$this->id");

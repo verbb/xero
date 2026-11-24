@@ -35,9 +35,6 @@
 
 {% if setup %}
     {% set canEditSettings = currentUser.admin and craft.app.config.general.allowAdminChanges %}
-    {% set organisation = setup.organisation %}
-    {% set connected = setup.connected %}
-    {% set ready = setup.ready %}
 
     <pk-setup-checklist
         heading="{{ 'Send Orders to Xero' | t('commerce-xero') }}"
@@ -45,7 +42,7 @@
         done-label="{{ '(done)' | t('commerce-xero') }}"
     >
         <span slot="intro">
-            {{- 'Your organisations will be listed here once the first order reaches Xero. Each step ticks itself off once it’s done.' | t('commerce-xero') -}}
+            {{- 'Your organisations will be listed here once you add the first one. Each step ticks itself off once it’s done.' | t('commerce-xero') -}}
             {% if not setup.credentials and not canEditSettings %}
                 {{ ' ' ~ ('An admin needs to add the Xero app’s credentials where admin changes are allowed.' | t('commerce-xero')) }}
             {% endif -%}
@@ -64,7 +61,7 @@
             {% endif %}
         </pk-setup-step>
 
-        <pk-setup-step heading="{{ 'Add an organisation' | t('commerce-xero') }}"{{ organisation ? ' done' }}>
+        <pk-setup-step heading="{{ 'Add an organisation' | t('commerce-xero') }}">
             {{ 'Each organisation sends orders to one Xero organisation, with its own accounts.' | t('commerce-xero') }}
 
             {% if setup.credentials %}
@@ -72,42 +69,17 @@
             {% endif %}
         </pk-setup-step>
 
-        <pk-setup-step heading="{{ 'Connect it to Xero' | t('commerce-xero') }}"{{ connected ? ' done' }}>
-            {% if connected %}
-                {{ 'Connected to {name}.' | t('commerce-xero', { name: connected.getName() }) }}
-            {% else %}
-                {{ 'Sign in to Xero from the organisation’s page and allow access to the organisation orders go to.' | t('commerce-xero') }}
-            {% endif %}
-
-            {% if organisation %}
-                <a slot="action" class="btn" href="{{ organisation.getCpEditUrl() }}">{{ 'Connect' | t('commerce-xero') }}</a>
-            {% endif %}
+        {# These happen on the organisation's own page, which takes over once the first organisation is saved. #}
+        <pk-setup-step heading="{{ 'Connect it to Xero' | t('commerce-xero') }}">
+            {{ 'Sign in to Xero from the organisation’s page and allow access to the organisation orders go to.' | t('commerce-xero') }}
         </pk-setup-step>
 
-        <pk-setup-step heading="{{ 'Map accounts and enable it' | t('commerce-xero') }}"{{ ready ? ' done' }}>
-            {% if ready %}
-                {{ '{name} sends paid orders to Xero.' | t('commerce-xero', { name: ready.getName() }) }}
-            {% elseif connected and connected.hasRequiredAccounts() %}
-                {{ 'The accounts are mapped. Turn on Enabled so paid orders start sending.' | t('commerce-xero') }}
-            {% else %}
-                {{ 'Choose the Xero accounts for sales, payments, shipping and rounding, then turn on Enabled so paid orders start sending.' | t('commerce-xero') }}
-            {% endif %}
-
-            {% if connected %}
-                <a slot="action" class="btn" href="{{ connected.getCpEditUrl() }}">{{ (connected.hasRequiredAccounts() ? 'Enable organisation' : 'Map accounts') | t('commerce-xero') }}</a>
-            {% endif %}
-
-            {% if ready %}
-                <a slot="change" href="{{ ready.getCpEditUrl() }}">{{ 'Change' | t('commerce-xero') }}</a>
-            {% endif %}
+        <pk-setup-step heading="{{ 'Map accounts and enable it' | t('commerce-xero') }}">
+            {{ 'Choose the Xero accounts for sales, payments, shipping and rounding, then turn on Enabled so paid orders start sending.' | t('commerce-xero') }}
         </pk-setup-step>
 
         <pk-setup-step heading="{{ 'Send your first order' | t('commerce-xero') }}">
             {{ 'Paid orders go to Xero on their own shortly after payment, or use Send to Xero on an order’s page.' | t('commerce-xero') }}
-
-            {% if currentUser.can('commerce-manageOrders') %}
-                <a slot="action" class="btn" href="{{ cpUrl('commerce/orders') }}">{{ 'View orders' | t('commerce-xero') }}</a>
-            {% endif %}
         </pk-setup-step>
     </pk-setup-checklist>
 {% elseif not settings.isConfigured() %}
