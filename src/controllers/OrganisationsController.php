@@ -41,6 +41,7 @@ class OrganisationsController extends Controller
         return $this->renderTemplate('commerce-xero/organisations', [
             'organisations' => $organisations,
             'settings' => $settings,
+            'setup' => Xero::$plugin->getOrganisations()->getSetupSteps(),
         ]);
     }
 

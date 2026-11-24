@@ -1,6 +1,7 @@
 <?php
 namespace verbb\xero\services;
 
+use verbb\xero\Xero;
 use verbb\xero\events\OrganisationEvent;
 use verbb\xero\models\Organisation;
 use verbb\xero\records\Organisation as OrganisationRecord;
@@ -8,6 +9,7 @@ use verbb\xero\records\Organisation as OrganisationRecord;
 use Craft;
 use craft\base\MemoizableArray;
 use craft\db\Query;
+use craft\helpers\App;
 use craft\helpers\ArrayHelper;
 use craft\helpers\Json;
 
@@ -62,6 +64,48 @@ class Organisations extends Component
         return $organisations;
     }
 
+    /**
+     * The landing page's setup steps, or null once the first order has been sent to Xero.
+     *
+     * Each step points at the first organisation that has reached it, so the checklist can link straight to the
+     * organisation to carry on with.
+     */
+    public function getSetupSteps(): ?array
+    {
+        // Sites that sent orders before this counter existed are seeded by `m261123_000000_seed_orders_sent`.
+        if (Xero::$plugin->getService()->getOrdersSentCount() > 0) {
+            return null;
+        }
+
+        $settings = Xero::$plugin->getSettings();
+        $organisations = $this->getAllOrganisations();
+
+        $connected = null;
+        $ready = null;
+
+        foreach ($organisations as $organisation) {
+            if (!$organisation->isConnected()) {
+                continue;
+            }
+
+            $connected ??= $organisation;
+
+            if ($organisation->enabled && $organisation->hasRequiredAccounts()) {
+                $ready = $organisation;
+
+                break;
+            }
+        }
+
+        return [
+            // Resolve environment variables, as connecting does, so an unset variable doesn't count.
+            'credentials' => App::parseEnv($settings->clientId) && App::parseEnv($settings->clientSecret),
+            'organisation' => $organisations[0] ?? null,
+            'connected' => $connected,
+            'ready' => $ready,
+        ];
+    }
+
     public function getAllOrganisationsByParams(array $params): array
     {
         $limit = ArrayHelper::remove($params, 'limit');
@@ -109,6 +153,7 @@ class Organisations extends Component
 
         if ($runValidation && !$organisation->validate()) {
             Craft::info('Organisation not saved due to validation error.', __METHOD__);
+
             return false;
         }
 
@@ -188,6 +233,7 @@ class Organisations extends Component
     {
         if (!$organisation->id) {
             $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
+
             return false;
         }
 
@@ -196,6 +242,7 @@ class Organisations extends Component
 
         if (!$mutex->acquire($lockName, self::CONNECTION_LOCK_TIMEOUT)) {
             $organisation->addError('id', Craft::t('commerce-xero', 'This organisation is already being updated. Please try again.'));
+
             return false;
         }
 
@@ -227,6 +274,7 @@ class Organisations extends Component
         // Keep retry credentials and the local organisation until Xero confirms revocation.
         if (!$organisation->revokeConnection()) {
             $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t disconnect this organisation from Xero. Please try again.'));
+
             return false;
         }
 
@@ -242,6 +290,7 @@ class Organisations extends Component
             if (!$deleted) {
                 $transaction->rollBack();
                 $organisation->addError('id', Craft::t('commerce-xero', 'Couldn’t delete organisation.'));
+
                 return false;
             }
 

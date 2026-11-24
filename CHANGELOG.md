@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+### Added
+- Added a setup checklist to the Organisations page, which walks through the Xero app credentials, adding and connecting an organisation and mapping its accounts, and stays until the first order is sent to Xero.
+- Added “No organisations yet” and “No Xero app credentials” empty states to the Organisations page, in place of the empty table and the old “Setup Required” message.
+
+### Changed
+- Xero now counts the orders it sends, so the setup checklist doesn't come back once orders are going to Xero. Sites that already have a connected organisation with mapped accounts are counted from the update.
+
 ## 3.0.15 - 2026-11-01
 
 ### Fixed

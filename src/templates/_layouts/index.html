@@ -4,6 +4,11 @@
 
 {% do view.registerAssetBundle('verbb\\xero\\web\\assets\\cp\\XeroAsset') %}
 
+{# A page made of its own cards sits straight on the page background, without Craft's content pane around it. #}
+{% if bareContent ?? false %}
+    {% set bodyClass = (bodyClass ?? [])|explodeClass|push('xero-bare-content') %}
+{% endif %}
+
 {% if title is not defined %}
     {% set title = 'Xero' | t('commerce-xero') %}
 {% endif %}
@@ -13,8 +18,9 @@
 
     {% endblock %}
 
+    {% if not (hidePluginFooter ?? false) %}
     <hr>
-    
+
     <div id="plugin-footer">
         <div class="footer-left">
             {% block footerButton %}
@@ -36,4 +42,5 @@
             </a>
         </div>
     </div>
+    {% endif %}
 {% endblock %}

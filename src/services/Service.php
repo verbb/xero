@@ -8,6 +8,7 @@ use verbb\xero\models\Organisation;
 
 use Craft;
 use craft\base\Component;
+use craft\helpers\Sequence;
 
 use craft\commerce\elements\Order;
 
@@ -23,6 +24,7 @@ class Service extends Component
 
     public const EVENT_BEFORE_SEND_ORDER = 'beforeSendOrder';
     public const EVENT_AFTER_SEND_ORDER = 'afterSendOrder';
+    public const ORDERS_SENT_SEQUENCE = 'commerce-xero:ordersSent';
 
 
     // Public Methods
@@ -151,6 +153,10 @@ class Service extends Component
             $success = true;
         }
 
+        if ($success) {
+            $this->recordOrderSent();
+        }
+
         // Fire an 'afterSendOrder' event
         if ($success && $this->hasEventHandlers(self::EVENT_AFTER_SEND_ORDER)) {
             $this->trigger(self::EVENT_AFTER_SEND_ORDER, new OrderEvent([
@@ -159,6 +165,27 @@ class Service extends Component
         }
 
         return $success;
+    }
+
+    /**
+     * How many orders have been sent to Xero. Xero keeps no record of each order it sends, so this counter in
+     * Craft's sequences table is what ends the landing page's setup checklist.
+     */
+    public function getOrdersSentCount(): int
+    {
+        return (int)Sequence::current(self::ORDERS_SENT_SEQUENCE);
+    }
+
+    public function recordOrderSent(): void
+    {
+        try {
+            Sequence::next(self::ORDERS_SENT_SEQUENCE);
+        } catch (Throwable $e) {
+            // The order is already in Xero, so a busy lock shouldn't fail the send.
+            Xero::error('Unable to record a sent order: “{message}”.', [
+                'message' => $e->getMessage(),
+            ]);
+        }
     }
 
     public function findOrCreateContact(Organisation $organisation, Order $order): array

@@ -10,9 +10,20 @@
 {% set title = 'Organisations' | t('commerce-xero') %}
 {% set selectedSubnavItem = 'organisations' %}
 
+{% if setup or not settings.isConfigured() or not organisations %}
+    {% do view.registerAssetBundle('verbb\\xero\\web\\assets\\cp\\PluginKitAsset') %}
+{% endif %}
+
+{# Until setup is finished, the page is the setup checklist, straight on the page background. #}
+{% if setup %}
+    {% set bareContent = true %}
+    {% set hidePluginFooter = true %}
+{% endif %}
+
 {% block actionButton %}
 
-{% if settings.isConfigured() %}
+{# The checklist has its own step for adding an organisation. #}
+{% if settings.isConfigured() and not setup %}
     <a href="{{ url('xero/organisations/new') }}" class="btn submit add icon">
         {{ 'New organisation' | t('commerce-xero') }}
     </a>
@@ -22,22 +33,103 @@
 
 {% block blockContent %}
 
-{% if not settings.isConfigured() %}
-    <h2>{{ 'Setup Required' | t('commerce-xero') }}</h2>
+{% if setup %}
+    {% set canEditSettings = currentUser.admin and craft.app.config.general.allowAdminChanges %}
+    {% set organisation = setup.organisation %}
+    {% set connected = setup.connected %}
+    {% set ready = setup.ready %}
 
-    <p>{{ 'You need to configure this plugin with {link} before you can link a Xero organisation.' | t('commerce-xero', { link: '<a href="https://developer.xero.com/documentation/getting-started/getting-started-guide">Xero</a>'}) | md }}</p>
+    <pk-setup-checklist
+        heading="{{ 'Send Orders to Xero' | t('commerce-xero') }}"
+        count-label="{{ '{done} of {total} done' | t('commerce-xero') }}"
+        done-label="{{ '(done)' | t('commerce-xero') }}"
+    >
+        <span slot="intro">
+            {{- 'Your organisations will be listed here once the first order reaches Xero. Each step ticks itself off once it’s done.' | t('commerce-xero') -}}
+            {% if not setup.credentials and not canEditSettings %}
+                {{ ' ' ~ ('An admin needs to add the Xero app’s credentials where admin changes are allowed.' | t('commerce-xero')) }}
+            {% endif -%}
+        </span>
 
-    {% if craft.app.user.getIsAdmin() and craft.app.config.general.allowAdminChanges %}
-        <a href="{{ cpUrl('xero/settings') }}" class="btn submit">{{ 'Update Settings' | t('commerce-xero') }}</a>
-    {% else %}
-        <em>{{ 'Please ask your developer to action this.' | t('commerce-xero') }}.</em>
-    {% endif %}
+        <pk-setup-step heading="{{ 'Add your Xero app’s credentials' | t('commerce-xero') }}"{{ setup.credentials ? ' done' }}>
+            {% if setup.credentials %}
+                {{ 'The client ID and secret are saved.' | t('commerce-xero') }}
+            {% else %}
+                {{ 'Create a web app at developer.xero.com with {uri} as its redirect URI, then save its client ID and secret.' | t('commerce-xero', { uri: '<code>' ~ settings.getRedirectUri() | e ~ '</code>' }) | raw }}
+            {% endif %}
+
+            {% if canEditSettings %}
+                <a slot="action" class="btn" href="{{ cpUrl('xero/settings') }}">{{ 'Open settings' | t('commerce-xero') }}</a>
+                <a slot="change" href="{{ cpUrl('xero/settings') }}">{{ 'Change' | t('commerce-xero') }}</a>
+            {% endif %}
+        </pk-setup-step>
+
+        <pk-setup-step heading="{{ 'Add an organisation' | t('commerce-xero') }}"{{ organisation ? ' done' }}>
+            {{ 'Each organisation sends orders to one Xero organisation, with its own accounts.' | t('commerce-xero') }}
+
+            {% if setup.credentials %}
+                <a slot="action" class="btn" href="{{ cpUrl('xero/organisations/new') }}">{{ 'New organisation' | t('commerce-xero') }}</a>
+            {% endif %}
+        </pk-setup-step>
+
+        <pk-setup-step heading="{{ 'Connect it to Xero' | t('commerce-xero') }}"{{ connected ? ' done' }}>
+            {% if connected %}
+                {{ 'Connected to {name}.' | t('commerce-xero', { name: connected.getName() }) }}
+            {% else %}
+                {{ 'Sign in to Xero from the organisation’s page and allow access to the organisation orders go to.' | t('commerce-xero') }}
+            {% endif %}
+
+            {% if organisation %}
+                <a slot="action" class="btn" href="{{ organisation.getCpEditUrl() }}">{{ 'Connect' | t('commerce-xero') }}</a>
+            {% endif %}
+        </pk-setup-step>
+
+        <pk-setup-step heading="{{ 'Map accounts and enable it' | t('commerce-xero') }}"{{ ready ? ' done' }}>
+            {% if ready %}
+                {{ '{name} sends paid orders to Xero.' | t('commerce-xero', { name: ready.getName() }) }}
+            {% elseif connected and connected.hasRequiredAccounts() %}
+                {{ 'The accounts are mapped. Turn on Enabled so paid orders start sending.' | t('commerce-xero') }}
+            {% else %}
+                {{ 'Choose the Xero accounts for sales, payments, shipping and rounding, then turn on Enabled so paid orders start sending.' | t('commerce-xero') }}
+            {% endif %}
+
+            {% if connected %}
+                <a slot="action" class="btn" href="{{ connected.getCpEditUrl() }}">{{ (connected.hasRequiredAccounts() ? 'Enable organisation' : 'Map accounts') | t('commerce-xero') }}</a>
+            {% endif %}
+
+            {% if ready %}
+                <a slot="change" href="{{ ready.getCpEditUrl() }}">{{ 'Change' | t('commerce-xero') }}</a>
+            {% endif %}
+        </pk-setup-step>
+
+        <pk-setup-step heading="{{ 'Send your first order' | t('commerce-xero') }}">
+            {{ 'Paid orders go to Xero on their own shortly after payment, or use Send to Xero on an order’s page.' | t('commerce-xero') }}
+
+            {% if currentUser.can('commerce-manageOrders') %}
+                <a slot="action" class="btn" href="{{ cpUrl('commerce/orders') }}">{{ 'View orders' | t('commerce-xero') }}</a>
+            {% endif %}
+        </pk-setup-step>
+    </pk-setup-checklist>
+{% elseif not settings.isConfigured() %}
+    {# Setup was finished once, so only the missing credentials stop orders from sending. #}
+    <pk-state-panel variant="warning" heading="{{ 'No Xero app credentials' | t('commerce-xero') }}">
+        {{ 'Orders can’t be sent to Xero until the app’s client ID and secret are saved.' | t('commerce-xero') }}
+
+        {% if currentUser.admin and craft.app.config.general.allowAdminChanges %}
+            <a slot="actions" class="btn" href="{{ cpUrl('xero/settings') }}">{{ 'Open settings' | t('commerce-xero') }}</a>
+        {% endif %}
+    </pk-state-panel>
+{% elseif not organisations %}
+    <pk-state-panel heading="{{ 'No organisations yet' | t('commerce-xero') }}">
+        {{ 'Orders aren’t sent to Xero until you add and connect an organisation.' | t('commerce-xero') }}
+    </pk-state-panel>
 {% else %}
     <div id="organisations-vue-admin-table"></div>
 {% endif %}
 
 {% endblock %}
 
+{% if not setup and settings.isConfigured() and organisations %}
 {% set tableData = [] %}
 
 {% for organisation in organisations %}
@@ -80,3 +172,4 @@
         tableData: {{ tableData | json_encode | raw }},
     });
 {% endjs %}
+{% endif %}

@@ -1,0 +1,10 @@
+/* The setup checklist sits straight on the page background, without Craft's content pane around it. */
+.xero-bare-content #content.content-pane {
+    padding: 0;
+    background: transparent;
+    box-shadow: none;
+}
+
+.xero-bare-content pk-setup-checklist code {
+    overflow-wrap: anywhere;
+}
