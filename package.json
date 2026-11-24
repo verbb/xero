@@ -5,7 +5,7 @@
         "build": "vite build --mode cp && vite build --mode plugin-kit"
     },
     "dependencies": {
-        "@verbb/plugin-kit-web": "file:../../../plugin-kit/plugin-kit/plugin-kit-web"
+        "@verbb/plugin-kit-web": "^2.3.0"
     },
     "devDependencies": {
         "vite": "^8.3.5"
